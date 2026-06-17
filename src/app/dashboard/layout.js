@@ -1,0 +1,13 @@
+import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
+
+export default function DashboardLayout({ children }) {
+  return (
+    <div className="min-h-screen bg-background">
+    <div className="flex">
+
+      <DashboardSidebar />
+      <main className="m-10"> {children}</main>
+    </div>
+    </div>
+  );
+}
