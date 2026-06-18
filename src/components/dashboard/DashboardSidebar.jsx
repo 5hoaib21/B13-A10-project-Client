@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import {
   Bars,
   Bell,
+  Comment,
   Envelope,
   Gear,
   House,
@@ -11,7 +12,9 @@ import {
 import { Button, Drawer } from "@heroui/react";
 import { ChartArea, User } from "lucide-react";
 import { headers } from "next/headers";
-import { BiMoney } from "react-icons/bi";
+import Link from "next/link";
+import { BiAddToQueue, BiMoney } from "react-icons/bi";
+import { CiSaveDown1 } from "react-icons/ci";
 import { TbAsset } from "react-icons/tb";
 
 export async function DashboardSidebar() {
@@ -38,17 +41,18 @@ export async function DashboardSidebar() {
     ],
     creator: [
       {
-        icon: ChartArea,
-        label: "Overview",
-        link: "/dashboard/creator/overview",
+        icon: User,
+        label: "My Profile",
+        link: "/dashboard/creator/profile",
       },
-      { icon: TbAsset, label: "Productsss", link: "/dashboard/creator/products" },
+      { icon: BiAddToQueue, label: "Add Prompt", link: "/dashboard/creator/add-prompt" },
       {
         icon: BiMoney,
-        label: "Transactions",
-        link: "/dashboard/creator/transactions",
+        label: "My Prompts",
+        link: "/dashboard/creator/my-prompt",
       },
-      { icon: Gear, label: "Settings", link: "/dashboard/creator/settings" },
+      { icon: CiSaveDown1, label: "Saved Prompts", link: "/dashboard/creator/saved-prompt" },
+      { icon: Comment, label: "My Reviews", link: "/dashboard/creator/my-review" },
     ],
     admin: [
       {
@@ -84,7 +88,8 @@ export async function DashboardSidebar() {
       </Button>
       <nav className="flex flex-col gap-1 hidden lg:block md:block">
         {navItems.map((item) => (
-          <button
+         <Link href={item.link} key={item.label}>
+           <button
             key={item.label}
             className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-default"
             type="button"
@@ -92,6 +97,7 @@ export async function DashboardSidebar() {
             <item.icon className="size-5 text-muted" />
             {item.label}
           </button>
+         </Link>
         ))}
       </nav>
       <Drawer.Backdrop>
@@ -104,6 +110,7 @@ export async function DashboardSidebar() {
             <Drawer.Body>
               <nav className="flex flex-col gap-1">
                 {navItems.map((item) => (
+                  <Link href={item.link} key={item.label}>
                   <button
                     key={item.label}
                     className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-default"
@@ -112,6 +119,7 @@ export async function DashboardSidebar() {
                     <item.icon className="size-5 text-muted" />
                     {item.label}
                   </button>
+                  </Link>
                 ))}
               </nav>
             </Drawer.Body>

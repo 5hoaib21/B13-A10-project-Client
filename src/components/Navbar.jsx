@@ -82,7 +82,7 @@ const Navbar = () => {
                 className="font-medium text-accent"
                 aria-current="page"
               >
-                Browse Products
+                All Prompts
               </Link>
             </li>
             <li>

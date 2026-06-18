@@ -132,7 +132,9 @@ export default function UserPricingPage() {
             </ul>
           </div>
 
-          <Button
+          <form action="/api/subscription" method="POST">
+            <Button
+            type="submit"
             color={plan.popular || filteredPlans.length === 1 ? "primary" : "default"}
             variant={plan.popular || filteredPlans.length === 1 ? "solid" : "bordered"}
             className={`w-full mt-8 h-11 rounded-xl text-sm font-semibold tracking-wide transition-all ${
@@ -143,6 +145,7 @@ export default function UserPricingPage() {
           >
             Pay Once As {plan.role}
           </Button>
+          </form>
         </Card>
       ))}
     </div>
