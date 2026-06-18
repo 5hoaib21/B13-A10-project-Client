@@ -6,14 +6,14 @@ export async function proxy(request) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-  if (session?.user?.role == "seller" && session?.user?.plan == "free") {
-    return NextResponse.redirect(new URL("/pricing", request.url));
-  }
+    if (session?.user?.role == "user" && session?.user?.plan == "free") {
+      return NextResponse.redirect(new URL("/pricing", request.url));
+    }
   if (!session) {
     return NextResponse.redirect(new URL("/signin", request.url));
   }
 }
 
 export const config = {
-  matcher: ["/profile", "/dashboard/seller"],
+  matcher: ["/profile", "/dashboard/user"],
 };

@@ -19,36 +19,36 @@ export async function DashboardSidebar() {
     headers: await headers()
   })
   const user = session?.user;
-  const role = user?.role || 'buyer'
+  const role = user?.role || 'creator';
   // console.log('user', user);
   const dashboardItems = {
-    seller: [
+    user: [
       {
         icon: ChartArea,
         label: "Overview",
-        link: "/dashboard/seller/overview",
+        link: "/dashboard/user/overview",
       },
-      { icon: TbAsset, label: "Products", link: "/dashboard/seller/products" },
+      { icon: TbAsset, label: "Products", link: "/dashboard/user/products" },
       {
         icon: BiMoney,
         label: "Transactions",
-        link: "/dashboard/seller/transactions",
+        link: "/dashboard/user/transactions",
       },
-      { icon: Gear, label: "Settings", link: "/dashboard/seller/settings" },
+      { icon: Gear, label: "Settings", link: "/dashboard/user/settings" },
     ],
-    buyer: [
+    creator: [
       {
         icon: ChartArea,
         label: "Overview",
-        link: "/dashboard/buyer/overview",
+        link: "/dashboard/creator/overview",
       },
-      { icon: TbAsset, label: "Productsss", link: "/dashboard/buyer/products" },
+      { icon: TbAsset, label: "Productsss", link: "/dashboard/creator/products" },
       {
         icon: BiMoney,
         label: "Transactions",
-        link: "/dashboard/buyer/transactions",
+        link: "/dashboard/creator/transactions",
       },
-      { icon: Gear, label: "Settings", link: "/dashboard/buyer/settings" },
+      { icon: Gear, label: "Settings", link: "/dashboard/creator/settings" },
     ],
     admin: [
       {

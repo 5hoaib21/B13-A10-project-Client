@@ -71,12 +71,12 @@ export default function SignUpPage() {
                 </Select.Trigger>
                 <Select.Popover>
                   <ListBox>
-                    <ListBox.Item id="buyer" textValue="buyer">
-                      Buyer
+                    <ListBox.Item id="creator" textValue="creator">
+                      creator
                       <ListBox.ItemIndicator />
                     </ListBox.Item>
-                    <ListBox.Item id="seller" textValue="seller">
-                      Seller
+                    <ListBox.Item id="user" textValue="user">
+                      user
                       <ListBox.ItemIndicator />
                     </ListBox.Item>
                   </ListBox>

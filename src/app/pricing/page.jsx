@@ -1,185 +1,152 @@
-import { Button } from "@heroui/react";
+"use client";
 
-export default function SellerPricingPage() {
-  const plans = [
+import React from "react";
+import { Card, Button } from "@heroui/react";
+import { CircleCheck, Firewall } from "@gravity-ui/icons";
+import { authClient } from "@/lib/auth-client";
+
+export default function UserPricingPage() {
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+  const userRole = user?.role; // Expected: "User" or "Creator"
+  console.log("user", userRole);
+
+ // Configured data structure for explicit AI Prompt Marketplace One-Time flat payment layout
+  const oneTimePlans = [
     {
-      name: "Starter Seller",
-      price: "$4",
-      period: "/month",
-      description: "Perfect for new sellers starting their journey.",
+      name: "Standard Prompt Explorer",
+      role: "User",
+      price: "$5",
+      period: "/one-time payment",
+      description: "Perfect for prompt enthusiasts, engineers, and casual prompt buyers.",
       features: [
-        "Up to 50 products",
-        "Basic analytics",
-        "Order management",
-        "Seller profile",
-        "Email support",
+        "Lifetime marketplace access",
+        "Unlock & copy premium verified prompts",
+        "Organize unlimited prompts in custom Collections",
+        "Advanced searching & category filtering tools",
+        "Direct interaction with top creators via reviews",
+        "Standard customer email support",
       ],
       popular: false,
     },
     {
-      name: "Professional Seller",
-      price: "$14",
-      period: "/month",
-      description: "For growing businesses that need more visibility.",
+      name: "Premium Prompt Architect",
+      role: "Creator",
+      price: "$5",
+      period: "/one-time payment",
+      description: "For prompt engineers and AI creators looking to publish & monetize setups.",
       features: [
-        "Unlimited products",
-        "Advanced analytics",
-        "Priority product listing",
-        "Promotional campaigns",
-        "Inventory management",
-        "Priority support",
+        "Unlimited engineering prompt listings",
+        "Advanced sales & engagement analytics dashboard",
+        "Support for dynamic parameters [Variables] insertion",
+        "Priority marketplace indexing & trending placement",
+        "Automated community review management system",
+        "24/7 Priority platform developer support",
       ],
       popular: true,
     },
-    {
-      name: "Enterprise Seller",
-      price: "Custom",
-      period: "",
-      description: "For brands and large-scale businesses.",
-      features: [
-        "Everything in Professional",
-        "Dedicated account manager",
-        "Custom integrations",
-        "Featured homepage placement",
-        "API access",
-        "24/7 support",
-      ],
-      popular: false,
-    },
   ];
 
+  // 💡 FIX LOGIC: Filter out plans based on dynamic active logged-in user role
+  // Jodi user dynamic login state-e accurate thake, shudhu tar corresponding card dekhabe.
+  const filteredPlans = userRole 
+    ? oneTimePlans.filter(plan => plan.role.toLowerCase() === userRole.toLowerCase())
+    : oneTimePlans;
+
   return (
-    <main className="bg-linear-to-b from-white to-gray-50">
-      {/* Hero */}
-      <section className="mx-auto max-w-7xl px-4 py-20 text-center">
-        <span className="inline-flex rounded-full border px-4 py-1 text-sm font-medium">
-          Become a Seller
-        </span>
+   <main className="w-full min-h-screen bg-slate-50 text-zinc-800 pt-32 pb-24 px-4 overflow-hidden relative">
+  {/* 🌌 Background Decorative Mesh Blurs (Light Theme Soft Tones) */}
+  <div className="absolute top-12 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-indigo-500/10 rounded-full blur-[130px] pointer-events-none" />
+  <div className="absolute bottom-1/4 -right-20 w-[400px] h-[400px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />
 
-        <h1 className="mt-6 text-4xl font-bold tracking-tight md:text-6xl">
-          Grow Your Business
-          <span className="block text-primary">
-            Sell to Thousands of Customers
-          </span>
-        </h1>
+  {/* Hero Header Block */}
+  <section className="mx-auto max-w-4xl text-center space-y-4 mb-20 relative z-10">
+    <span className="px-3 py-1 rounded-full border border-zinc-200 bg-white/80 text-[11px] font-semibold text-indigo-600 tracking-wider uppercase backdrop-blur-md shadow-xs">
+      Simple Pricing
+    </span>
+    <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-zinc-900 leading-tight">
+      Unlock Lifetime Access <br />
+      <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
+        No Monthly Subscriptions
+      </span>
+    </h1>
+    <p className="mx-auto max-w-xl text-sm sm:text-base text-zinc-500 font-normal leading-relaxed">
+      Pay once, enjoy forever. Your customized pricing matrix is automatically locked into your designated account role.
+    </p>
+  </section>
 
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-          Start selling on our marketplace and reach more customers with
-          powerful tools, secure payments, and dedicated seller support.
-        </p>
-      </section>
+  {/* Pricing Grids - Dynamic Layout Context Adjustment */}
+  <section className="mx-auto max-w-4xl px-4 pb-20 relative z-10">
+    <div 
+      className={`grid gap-8 items-stretch w-full mx-auto ${
+        filteredPlans.length === 1 
+          ? "max-w-md grid-cols-1" // Single card perfectly centered in middle
+          : "max-w-3xl md:grid-cols-2" // Fallback default view
+      }`}
+    >
+      {filteredPlans.map((plan) => (
+        <Card
+          key={plan.name}
+          className={`relative bg-white border p-6 sm:p-8 rounded-[24px] flex flex-col justify-between transition-all duration-300 ${
+            plan.popular || filteredPlans.length === 1
+              ? "border-indigo-500 shadow-xl shadow-indigo-500/5 ring-4 ring-indigo-500/5 -translate-y-1" 
+              : "border-zinc-200 shadow-xs hover:border-zinc-300 hover:shadow-md"
+          }`}
+        >
+          {(plan.popular || filteredPlans.length === 1) && (
+            <span className="absolute top-4 right-4 bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1 shadow-xs">
+              <Firewall size={12} /> Best Value
+            </span>
+          )}
 
-      {/* Pricing */}
-      <section className="mx-auto max-w-7xl px-4 pb-20">
-        <div className="grid gap-8 lg:grid-cols-3">
-          {plans.map((plan) => (
-            <div
-              key={plan.name}
-              className={`relative rounded-3xl border bg-white p-8 shadow-sm transition-all hover:shadow-xl ${
-                plan.popular ? "border-primary ring-2 ring-primary/20" : ""
-              }`}
-            >
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-red-500 px-4 py-1 text-sm font-medium text-primary-foreground">
-                  Most Popular
-                </div>
-              )}
-
-              <h3 className="text-2xl font-bold">{plan.name}</h3>
-
-              <p className="mt-3 text-muted-foreground">{plan.description}</p>
-
-              <div className="mt-8">
-                <span className="text-5xl font-bold">{plan.price}</span>
-                <span className="text-muted-foreground">{plan.period}</span>
-              </div>
-
-              <ul className="mt-8 space-y-4">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-3 text-sm">
-                    <svg
-                      className="h-5 w-5 shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M5 13l4 4L19 7"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              {plan.name === "Enterprise Seller" ? (
-                <Button
-                  className={`mt-8 w-full  font-medium`}
-                >Contact Sales</Button>
-              ) : (
-                <Button
-                  className={`mt-8 w-full  font-medium`}
-                >Become Seller</Button>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="border-t bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-20">
-          <h2 className="text-center text-3xl font-bold">Why Sell With Us?</h2>
-
-          <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl border p-6">
-              <h3 className="font-semibold">Large Customer Base</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Reach thousands of active buyers every day.
+          <div className="space-y-5">
+            <div>
+              <h3 className="text-xl font-bold text-zinc-900">{plan.name}</h3>
+              <p className="text-xs text-zinc-400 mt-1 min-h-[32px]">
+                {plan.description}
               </p>
             </div>
 
-            <div className="rounded-2xl border p-6">
-              <h3 className="font-semibold">Secure Payments</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Fast and secure payment settlements.
-              </p>
+            <div className="flex items-baseline gap-1 py-2 border-b border-zinc-100">
+              <span className="text-5xl font-extrabold text-zinc-900 tracking-tight">
+                {plan.price}
+              </span>
+              <span className="text-zinc-400 text-xs font-medium lowercase tracking-wide">
+                {plan.period}
+              </span>
             </div>
 
-            <div className="rounded-2xl border p-6">
-              <h3 className="font-semibold">Seller Dashboard</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Track sales, inventory, and performance.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border p-6">
-              <h3 className="font-semibold">Marketing Tools</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Promote products and boost visibility.
-              </p>
-            </div>
+            <ul className="space-y-3.5 pt-2">
+              {plan.features.map((feature) => (
+                <li
+                  key={feature}
+                  className="flex items-start gap-2.5 text-sm text-zinc-600 leading-relaxed"
+                >
+                  <CircleCheck
+                    className="text-indigo-600 mt-0.5 shrink-0"
+                    size={16}
+                  />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
-      </section>
 
-      {/* CTA */}
-      <section className="mx-auto max-w-5xl px-4 py-20">
-        <div className="rounded-3xl border bg-linear-to-r from-primary/10 to-primary/5 p-10 text-center">
-          <h2 className="text-3xl font-bold">Ready to Start Selling?</h2>
-
-          <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-            Join our marketplace today and start growing your online business.
-          </p>
-
-          <button className="mt-8 rounded-xl bg-primary px-8 py-3 font-medium text-primary-foreground">
-            Apply as Seller
-          </button>
-        </div>
-      </section>
-    </main>
+          <Button
+            color={plan.popular || filteredPlans.length === 1 ? "primary" : "default"}
+            variant={plan.popular || filteredPlans.length === 1 ? "solid" : "bordered"}
+            className={`w-full mt-8 h-11 rounded-xl text-sm font-semibold tracking-wide transition-all ${
+              plan.popular || filteredPlans.length === 1
+                ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/10"
+                : "border-zinc-200 bg-transparent text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900"
+            }`}
+          >
+            Pay Once As {plan.role}
+          </Button>
+        </Card>
+      ))}
+    </div>
+  </section>
+</main>
   );
 }
