@@ -25,7 +25,7 @@ export const auth = betterAuth({
       },
     },
   },
-  session: {
+    session: {
     cookieCache: {
       enabled: true,
       strategy: "jwt",

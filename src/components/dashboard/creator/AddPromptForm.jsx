@@ -16,6 +16,8 @@ import {
 } from "@heroui/react";
 import { MagicWand, Compass, ChevronDown } from "@gravity-ui/icons";
 import { CloudUpload, CloudUploadIcon } from "lucide-react";
+import { imageUpload } from "@/lib/actions/imgUpload";
+import { addPrompt } from "@/lib/actions/prompts";
 
 export default function AddPromptForm() {
   const [mounted, setMounted] = useState(false);
@@ -47,8 +49,8 @@ export default function AddPromptForm() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
-
-    console.log("Form Data Collected:", data);
+    const image = await imageUpload(data.image)
+    
 
     // Validation Check Logic
     const newErrors = {};
@@ -60,13 +62,16 @@ export default function AddPromptForm() {
       return;
     }
 
-    const payload = {
+    const promptPayload = {
       ...data,
+      image: image.url,
       copyCount: 0,
       status: "pending",
     };
-
-    console.log("Submitting Payload:", payload);
+    const result = await addPrompt(promptPayload);
+    console.log("Prompt submission result:", result);
+    
+    // console.log("Submitting Payload:", payload);
     toast.success("Prompt submitted for review successfully!");
   };
 
@@ -308,7 +313,7 @@ export default function AddPromptForm() {
                 <div className="flex flex-col md:flex-row items-center gap-6 p-6 border-2 border-dashed border-zinc-200 hover:border-indigo-400 bg-zinc-50/50 rounded-2xl group transition-all duration-200 cursor-pointer relative overflow-hidden">
                   <input
                     type="file"
-                    name="thumbnail"
+                    name="image"
                     accept="image/png, image/jpeg"
                     onChange={handleThumbnailUpload}
                     className="hidden"
