@@ -27,3 +27,13 @@ export const getAllPrompts = async (search) => {
     const data = await res.json();
     return data;
 }
+
+export const getPromptById = async (id) => {
+    const res = await fetch(`${baseURL}/prompts/${id}`);
+    if (!res.ok) {
+        throw new Error('Failed to fetch prompt by ID');
+    }
+    const data = await res.json();
+    return data;
+}
+

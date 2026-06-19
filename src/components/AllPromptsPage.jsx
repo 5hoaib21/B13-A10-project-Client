@@ -1,6 +1,7 @@
 import { Button } from "@heroui/react";
 import { Copy, Clock, ArrowRight, Sparkles, User } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 const AllPromptsPage = ({ prompt }) => {
   const {
@@ -99,7 +100,8 @@ const AllPromptsPage = ({ prompt }) => {
             </span>
           </div>
 
-          <Button
+         <Link href={`/prompts/${prompt._id}`}>
+             <Button
             variant="outline"
             className="group/btn relative inline-flex gap-1.5 text-blue-600 hover:text-blue-700 font-semibold text-sm transition-all duration-300 flex items-center"
           >
@@ -110,6 +112,7 @@ const AllPromptsPage = ({ prompt }) => {
             />
             <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-blue-600 group-hover/btn:w-full transition-all duration-300"></span>
           </Button>
+         </Link>
         </div>
       </div>
     </div>
