@@ -18,6 +18,7 @@ import { MagicWand, Compass, ChevronDown } from "@gravity-ui/icons";
 import { CloudUpload, CloudUploadIcon } from "lucide-react";
 import { imageUpload } from "@/lib/actions/imgUpload";
 import { addPrompt } from "@/lib/actions/prompts";
+// import { addPrompt } from "@/lib/actions/prompts";
 
 export default function AddPromptForm() {
   const [mounted, setMounted] = useState(false);
