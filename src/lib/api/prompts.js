@@ -18,3 +18,12 @@ export const getPrompts = async (page) => {
     const data = await res.json();
     return data;
 }
+
+export const getAllPrompts = async () => {
+    const res = await fetch(`${baseURL}/prompts`);
+    if (!res.ok) {
+        throw new Error('Failed to fetch all prompts');
+    }
+    const data = await res.json();
+    return data;
+}
