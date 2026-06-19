@@ -1,5 +1,5 @@
 import { Button } from "@heroui/react";
-import { Copy, Clock, ArrowRight, Sparkles } from "lucide-react";
+import { Copy, Clock, ArrowRight, Sparkles, User } from "lucide-react";
 import Image from "next/image";
 
 const AllPromptsPage = ({ prompt }) => {
@@ -89,7 +89,8 @@ const AllPromptsPage = ({ prompt }) => {
         {/* Bottom Section: AI Tool + Copies + Button */}
         <div className="flex items-center justify-between gap-3 pt-3 border-t border-gray-100">
           <div className="flex items-center gap-3">
-            <span className={`text-xs font-medium ${visibility === "public" ? "text-green-600 bg-green-50" : "text-red-400 bg-red-100"} px-2.5 py-1 rounded-full`}>
+            <span className={`text-xs font-medium ${visibility === "public" ? "text-green-600 bg-green-50" : "text-red-400 bg-red-100"} px-2.5 py-1 rounded-full flex items-center gap-1`}>
+             
               {visibility === "public" ? "Public" : "Private"}
             </span>
             <span className="text-xs text-gray-400 flex items-center gap-1">

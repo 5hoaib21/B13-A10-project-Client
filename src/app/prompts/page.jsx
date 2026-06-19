@@ -1,9 +1,11 @@
 import AllPromptsPage from "@/components/AllPromptsPage";
+import SearchPrompt from "@/components/SearchPrompt";
 import { getAllPrompts } from "@/lib/api/prompts";
 
 
-const PublicPromptsPage = async () => {
-    const prompts = await getAllPrompts();
+const PublicPromptsPage = async ({searchParams}) => {
+    const {search} = await searchParams;
+    const prompts = await getAllPrompts(search);
     
     return (
         <div className="min-h-screen bg-gray-50 py-8">
@@ -14,6 +16,11 @@ const PublicPromptsPage = async () => {
                         Browse through our collection of {prompts.length} prompts
                     </p>
                 </div>
+                <div className=" text-center mb-10 gap-3">
+                    <SearchPrompt />
+                </div>
+                    {search && <h2 className="mt-10">{prompts.length} prompts found</h2>}
+
                 
                 {prompts.length === 0 ? (
                     <div className="text-center py-12">
