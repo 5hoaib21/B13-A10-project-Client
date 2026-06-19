@@ -2,13 +2,15 @@ import { getPrompts } from '@/lib/api/prompts';
 import React from 'react';
 import MyPromptTable from './PromptTable';
 
-const SellerPromptPage = async () => {
-  const prompts = await getPrompts(); // Fetch prompts from the API
-  // console.log(prompts);
+const SellerPromptPage = async ({searchParams}) => {
+  const params = await searchParams;
+  
+  const prompts = await getPrompts(params.page); // Fetch prompts from the API
+  
   return (
     <div className="flex flex-col gap-4">
       <div>seller prompts page</div>
-      <MyPromptTable prompts={prompts} />
+      <MyPromptTable promptsData={prompts} />
     </div>
   );
 };

@@ -78,7 +78,7 @@ const Navbar = () => {
           <ul className="hidden items-center gap-4 md:flex">
             <li>
               <Link
-                href="#"
+                href={'/prompts'}
                 className="font-medium text-accent"
                 aria-current="page"
               >
@@ -171,8 +171,8 @@ const Navbar = () => {
           <div className="border-t border-separator md:hidden">
             <ul className="flex flex-col gap-2 p-4">
               <li>
-                <Link href="#" className="block py-2">
-                  Features
+                <Link href={'/prompts'} className="block py-2">
+                  All Prompts
                 </Link>
               </li>
               <li>
@@ -181,7 +181,7 @@ const Navbar = () => {
                 </Link>
               </li>
               <li>
-                <Link href="#" className="block py-2">
+                <Link href={`/pricing`}className="block py-2">
                   Pricing
                 </Link>
               </li>
