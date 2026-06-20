@@ -67,6 +67,8 @@ export default function AddPromptForm() {
       ...data,
       image: image.url,
       copyCount: 0,
+      //copyCount ta database e zacceh na !!!!!!!!!
+      // ratingCount: 0,
       status: "pending",
     };
     const result = await addPrompt(promptPayload);

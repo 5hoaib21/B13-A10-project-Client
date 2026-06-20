@@ -33,7 +33,7 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="flex items-center justify-center rounded-3xl bg-surface p-6 max-w-2xl mx-auto border mt-5">
+    <div className="flex items-center justify-center rounded-3xl bg-surface p-6 max-w-2xl mx-auto border mt-30">
       <Surface className="w-full">
         <Form onSubmit={onSubmit}>
           <Fieldset className="w-full">

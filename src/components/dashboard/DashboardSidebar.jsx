@@ -10,12 +10,14 @@ import {
   Person,
 } from "@gravity-ui/icons";
 import { Button, Drawer } from "@heroui/react";
-import { ChartArea, User } from "lucide-react";
+import { ChartArea, User, Users } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { BiAddToQueue, BiMoney } from "react-icons/bi";
 import { CiSaveDown1 } from "react-icons/ci";
+import { MdReport } from "react-icons/md";
 import { TbAsset } from "react-icons/tb";
+import { IoAnalytics } from "react-icons/io5";
 
 export async function DashboardSidebar() {
   const session = await auth.api.getSession({
@@ -27,17 +29,18 @@ export async function DashboardSidebar() {
   const dashboardItems = {
     user: [
       {
-        icon: ChartArea,
-        label: "Overview",
-        link: "/dashboard/user/overview",
+        icon: User,
+        label: "My Profile",
+        link: "/dashboard/user/profile",
       },
-      { icon: TbAsset, label: "Products", link: "/dashboard/user/products" },
+      { icon: BiAddToQueue, label: "Add Prompt", link: "/dashboard/user/add-prompt" },
       {
         icon: BiMoney,
-        label: "Transactions",
+        label: "My Prompt",
         link: "/dashboard/user/transactions",
       },
-      { icon: Gear, label: "Settings", link: "/dashboard/user/settings" },
+      { icon: Gear, label: "Saved Prompts", link: "/dashboard/user/saved-prompt" },
+      { icon: Gear, label: "My Reviews", link: "/dashboard/user/my-review" },
     ],
     creator: [
       {
@@ -56,17 +59,22 @@ export async function DashboardSidebar() {
     ],
     admin: [
       {
-        icon: ChartArea,
-        label: "Overview",
-        link: "/dashboard/admin/overview",
+        icon: Users,
+        label: "Users Management",
+        link: "/dashboard/admin/all-users",
       },
-      { icon: User, label: "User Management", link: "/dashboard/admin/products" },
+      { 
+        icon: User, 
+        label: "Prompts Management", 
+        link: "/dashboard/admin/all-prompts" 
+      },
       {
         icon: BiMoney,
         label: "Transactions",
-        link: "/dashboard/admin/transactions",
+        link: "/dashboard/admin/all-payments",
       },
-      { icon: Gear, label: "Settings", link: "/dashboard/admin/settings" },
+      { icon: MdReport, label: "Reports", link: "/dashboard/admin/reports" },
+      { icon: IoAnalytics, label: "Analytics", link: "/dashboard/admin/analytics" },
     ],
   };
 
