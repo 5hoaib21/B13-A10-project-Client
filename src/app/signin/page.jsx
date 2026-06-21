@@ -13,6 +13,7 @@ import {
   Select,
   TextField,
 } from "@heroui/react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from "react";
 import toast from "react-hot-toast";
@@ -56,6 +57,9 @@ export default function SignInPage() {
             </Button>
           </Fieldset>
         </Form>
+         <div className="flex justify-center my-3">
+                <h2>don`t have an Account? <Link href={'/signup'}><span className="text-blue-400 hover:underline">signup instead</span></Link></h2>
+              </div>
       </Surface>
     </div>
   );

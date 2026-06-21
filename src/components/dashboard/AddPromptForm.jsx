@@ -93,7 +93,7 @@ export default function AddPromptForm() {
   if (!mounted) return <div className="min-h-screen bg-slate-50" />;
 
   return (
-    <div className="w-full min-h-screen bg-slate-50 text-zinc-800 pt-32 pb-24 px-4 overflow-hidden relative">
+    <div className="w-full min-h-screen bg-slate-50 text-zinc-800 pt-5 pb-24 px-4 overflow-hidden relative">
       {/* 🌌 Ambient Soft Mesh Blurs - light mode styling standard */}
       <div className="absolute top-12 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-indigo-500/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-1/4 -left-20 w-[400px] h-[400px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />
