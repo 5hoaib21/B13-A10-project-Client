@@ -18,6 +18,7 @@ import { MagicWand, Compass, ChevronDown } from "@gravity-ui/icons";
 import { CloudUpload, CloudUploadIcon } from "lucide-react";
 import { imageUpload } from "@/lib/actions/imgUpload";
 import { addPrompt } from "@/lib/actions/prompts";
+import { redirect } from "next/navigation";
 // import { addPrompt } from "@/lib/actions/prompts";
 
 export default function AddPromptForm() {
@@ -67,15 +68,19 @@ export default function AddPromptForm() {
       ...data,
       image: image.url,
       copyCount: 0,
-      //copyCount ta database e zacceh na !!!!!!!!!
-      // ratingCount: 0,
+      //rating ta database e zacceh na !!!!!!!!!
+      ratingCount: 0,
       status: "pending",
     };
     const result = await addPrompt(promptPayload);
-    console.log("Prompt submission result:", result);
+    if(result.insertedId){
+      toast.success("Prompt submitted for review successfully!");
+      e.target.reset()
+      redirect('/dashboard/creator/my-prompt')
+    }
+    
     
     // console.log("Submitting Payload:", payload);
-    toast.success("Prompt submitted for review successfully!");
   };
 
   // ✨ Light Theme Polished Global Classes
@@ -120,6 +125,7 @@ export default function AddPromptForm() {
             onSubmit={handleSubmit}
             className="space-y-6"
             validationErrors={errors}
+            validationBehavior="aria"
           >
             <Fieldset className="space-y-6 p-0 m-0 border-none">
               {/* Title & Description Fields */}

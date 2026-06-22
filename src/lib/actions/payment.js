@@ -1,7 +1,7 @@
 'use server';
 
 
-const baseUrl = process.env.SERVER_URL;
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5005';
 
 export const subscribeToPremium = async (data) => {
   const res= await fetch(`${baseUrl}/subscriptions`, {

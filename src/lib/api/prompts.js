@@ -7,7 +7,7 @@ export const getPrompts = async (page) => {
         page = 1;
     }
     const token = await getTokenServer()
-    const res = await fetch(`${baseURL}/creator/prompts?page=${page}`, {
+    const res = await fetch(`${baseURL}/api/prompts?page=${page}`, {
         headers: {
             authorization: `Bearer ${token}`
         }
