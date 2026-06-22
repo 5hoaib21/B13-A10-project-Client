@@ -6,7 +6,7 @@ import { getMySavedPrompts } from "@/lib/api/prompts";
 import { Button } from "@heroui/react";
 
 export default async function UserSavedPromptPage() {
-  // ১. ব্যাকএন্ড থেকে সেভ করা প্রম্পট ডাটা আনা হচ্ছে
+  
   const response = await getMySavedPrompts();
   const savedPrompts = response?.data || [];
 
@@ -25,7 +25,7 @@ export default async function UserSavedPromptPage() {
       {savedPrompts.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
           <p className="text-gray-500 mb-4">
-            You haven't saved any prompts yet.
+            You haven`t saved any prompts yet.
           </p>
           <Link
             href="/prompts"

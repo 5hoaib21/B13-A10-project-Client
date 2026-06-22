@@ -72,14 +72,35 @@ export const getPromptById = async (id) => {
 
 export const getMySavedPrompts = async () => {
   try {
-    const token = await getTokenServer(); // ইউজার টোকেন নেওয়া হচ্ছে
+    const token = await getTokenServer(); 
     const res = await fetch(`${baseURL}/api/my-bookmarks`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         authorization: `Bearer ${token}`,
       },
-      next: { revalidate: 0 } // রিয়েল-টাইম ডাটা পাওয়ার জন্য ক্যাশিং অফ রাখা হলো
+      next: { revalidate: 0 } 
+    });
+
+    const result = await res.json();
+    return result;
+  } catch (error) {
+    return { success: false, error: error.message, data: [] };
+  }
+};
+
+
+
+export const getMyReviews = async () => {
+  try {
+    const token = await getTokenServer(); 
+    const res = await fetch(`${baseURL}/api/my-reviews`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      next: { revalidate: 0 }
     });
 
     const result = await res.json();
