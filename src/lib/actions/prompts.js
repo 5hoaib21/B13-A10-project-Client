@@ -77,6 +77,26 @@ export const submitPromptReview = async (id, reviewData) => {
 
 
 
+export const togglePromptBookmark = async (id) => {
+  try {
+    const token = await getTokenServer();
+    const res = await fetch(`${baseURL}/api/prompts/${id}/bookmark`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+    });
+
+    const result = await res.json();
+    return result;
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+
+
 
 
 // import { getTokenServer } from "../getTokenServer";

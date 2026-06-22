@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { MdReport } from "react-icons/md";
-import { incrementCopyCount, submitPromptReview } from "@/lib/actions/prompts";
+import { incrementCopyCount, submitPromptReview, togglePromptBookmark } from "@/lib/actions/prompts";
 import { useRouter } from "next/navigation";
 
 export default function PromptInteractions({
@@ -21,11 +21,14 @@ export default function PromptInteractions({
   rating: initialRating,
   totalReviews,
   reviews,
+  bookmarks = [], // 👈 ব্যাকএন্ড থেকে আসা বুকমার্ক করা ইউজারদের আইডি অ্যারে
+  currentUserId  // 👈 লগইন থাকা ইউজারের আইডি (যা সেশন থেকে ডিটেইলস পেজে এনে এখানে পাস করবেন)
 }) {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
-  const [isSaved, setIsSaved] = useState(false);
+  const [isSaved, setIsSaved] = useState(bookmarks.includes(currentUserId));
   const [isLoading, setIsLoading] = useState(false); // ✅ isLoading স্টেট যোগ করা হলো
+  
 
   const router = useRouter();
 
@@ -64,14 +67,24 @@ export default function PromptInteractions({
     }
   };
 
-  const handleSaveToggle = () => {
-    const nextSavedState = !isSaved;
-    setIsSaved(nextSavedState);
-
-    if (nextSavedState) {
-      toast.success("Added to your saved collections!");
-    } else {
-      toast.success("Removed from saved collections.");
+  const handleSaveToggle = async () => {
+    try {
+      const response = await togglePromptBookmark(promptId);
+      
+      if (response.success) {
+        setIsSaved(response.isSaved); 
+        if (response.isSaved) {
+          toast.success("Added to your saved collections!");
+        } else {
+          toast.success("Removed from saved collections.");
+        }
+        router.refresh();
+      } else {
+        toast.error(response.error || "Failed to update bookmark. Make sure you are logged in.");
+      }
+    } catch (error) {
+      console.error("❌ Bookmark error:", error);
+      toast.error("Something went wrong!");
     }
   };
 

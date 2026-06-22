@@ -184,6 +184,7 @@ export default async function PromptDetailsPage({ params }) {
               rating={rating}
               totalReviews={totalReviews}
               reviews={reviews}
+              currentUserId={prompt.userId}
             />
           </div>
 
