@@ -96,6 +96,26 @@ export const togglePromptBookmark = async (id) => {
 };
 
 
+export const submitPromptReport = async (id, reportData) => {
+  try {
+    const token = await getTokenServer();
+    const res = await fetch(`${baseURL}/api/prompts/${id}/report`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(reportData),
+    });
+
+    const result = await res.json();
+    return result;
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+
 
 
 
