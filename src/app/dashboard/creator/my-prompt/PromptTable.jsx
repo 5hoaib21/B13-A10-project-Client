@@ -38,7 +38,7 @@ export default function MyPromptTable({ promptsData }) {
                 <Table.Cell>{prompt?.copyCount || 0}</Table.Cell>
                 <Table.Cell>{prompt?.ratingCount || 0}</Table.Cell>
                 <Table.Cell className="flex gap-2">
-                  <EditPrompt promptId={prompt._id} />
+                  <EditPrompt promptId={prompt._id}  promptData={prompt}/>
 
                   {/* ক্লায়েন্ট কম্পোনেন্টে আইডি সুন্দরভাবে পাস হচ্ছে */}
                   <DeletePrompt promptId={prompt._id} />

@@ -1,8 +1,8 @@
 "use server";
 
-import { serverDelete, serverMutation } from "../core/server";
+import {  serverDelete, serverMutation } from "../core/server";
 import { getTokenServer } from "../getTokenServer";
-
+const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const addPrompt = async (data) => {
     return serverMutation(`/api/prompts`, data)

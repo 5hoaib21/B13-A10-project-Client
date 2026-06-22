@@ -1,6 +1,5 @@
 "use client";
 
-import { updatePrompt } from "@/lib/actions/prompts";
 import {
   Button,
   Input,
@@ -13,11 +12,14 @@ import {
 } from "@heroui/react";
 import { Edit, Pencil } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // সার্ভার কম্পোনেন্ট রিফ্রেশ করার জন্য
 import { toast } from "react-hot-toast";
+import { updatePrompt } from "@/lib/actions/prompts";
 
-export function EditPrompt({ promptData, promptId, onSuccess }) {
+export function EditPrompt({ promptData, promptId }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   
   // State for form fields
   const [formData, setFormData] = useState({
@@ -38,7 +40,7 @@ export function EditPrompt({ promptData, promptId, onSuccess }) {
         category: promptData.category || "",
         aiTool: promptData.aiTool || "",
         visibility: promptData.visibility || "public",
-        tags: promptData.tags?.join(", ") || "",
+        tags: Array.isArray(promptData.tags) ? promptData.tags.join(", ") : (promptData.tags || ""),
       });
     }
   }, [promptData]);
@@ -52,11 +54,12 @@ export function EditPrompt({ promptData, promptId, onSuccess }) {
     }));
   };
 
-  // Handle select changes
-  const handleSelectChange = (field, value) => {
+  // ✅ HeroUI-এর Set অবজেক্ট থেকে পুরো string-টি বের করার জন্য ফাংশনটি ফিক্স করা হলো
+  const handleSelectChange = (field, keys) => {
+    const selectedValue = Array.from(keys).join(""); // Set থেকে সম্পূর্ণ শব্দ রূপান্তর
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: selectedValue
     }));
   };
 
@@ -72,10 +75,7 @@ export function EditPrompt({ promptData, promptId, onSuccess }) {
         aiTool: formData.aiTool,
         visibility: formData.visibility,
         tags: formData.tags?.split(",").map(tag => tag.trim()).filter(tag => tag) || [],
-        promptId: id,
       };
-
-      console.log("📝 Form Data Submitted:", formValues);
 
       // Validate required fields
       if (!formValues.title || !formValues.content) {
@@ -84,14 +84,16 @@ export function EditPrompt({ promptData, promptId, onSuccess }) {
         return;
       }
 
-    //   const payload = await updatePrompt(formValues);
-    //   console.log("✅ Prompt saved successfully:", payload);
+      // এপিআই কল এবং রেসপন্স হ্যান্ডলিং
+      const response = await updatePrompt(promptId, formValues);
       
-      toast.success(promptData?.id ? "Prompt updated successfully!" : "Prompt created successfully!");
-      
-      // Close modal and refresh data
-      setIsOpen(false);
-    //   if (onSuccess) onSuccess(payload);
+      if (response.success) {
+        toast.success("Prompt updated successfully!");
+        setIsOpen(false); // মডাল বন্ধ হবে
+        router.refresh(); // টেবিলের ডাটা সার্ভার থেকে রিফ্রেশ হবে
+      } else {
+        toast.error(response.error || "Failed to update prompt");
+      }
 
     } catch (error) {
       console.error("❌ Error saving prompt:", error);
@@ -116,10 +118,10 @@ export function EditPrompt({ promptData, promptId, onSuccess }) {
                 <Pencil className="size-5" />
               </Modal.Icon>
               <Modal.Heading>
-                {promptData?.id ? "Edit Your Prompt" : "Create New Prompt"}
+                {promptId ? "Edit Your Prompt" : "Create New Prompt"}
               </Modal.Heading>
               <p className="mt-1.5 text-sm leading-5 text-muted">
-                Fill out the form below to {promptData?.id ? "update" : "create"} your prompt.
+                Fill out the form below to {promptId ? "update" : "create"} your prompt.
               </p>
             </Modal.Header>
             
@@ -156,10 +158,7 @@ export function EditPrompt({ promptData, promptId, onSuccess }) {
                     placeholder="Select category"
                     name="category"
                     selectedKeys={formData.category ? [formData.category] : []}
-                    onSelectionChange={(keys) => {
-                      const value = Array.from(keys)[0];
-                      handleSelectChange("category", value);
-                    }}
+                    onSelectionChange={(keys) => handleSelectChange("category", keys)} // ✅ ফিক্সড
                   >
                     <Label>Category</Label>
                     <Select.Trigger>
@@ -202,10 +201,7 @@ export function EditPrompt({ promptData, promptId, onSuccess }) {
                     placeholder="Select AI tool"
                     name="aiTool"
                     selectedKeys={formData.aiTool ? [formData.aiTool] : []}
-                    onSelectionChange={(keys) => {
-                      const value = Array.from(keys)[0];
-                      handleSelectChange("aiTool", value);
-                    }}
+                    onSelectionChange={(keys) => handleSelectChange("aiTool", keys)} // ✅ ফিক্সড
                   >
                     <Label>AI Tool</Label>
                     <Select.Trigger>
@@ -244,10 +240,7 @@ export function EditPrompt({ promptData, promptId, onSuccess }) {
                     placeholder="Select visibility"
                     name="visibility"
                     selectedKeys={formData.visibility ? [formData.visibility] : ["public"]}
-                    onSelectionChange={(keys) => {
-                      const value = Array.from(keys)[0];
-                      handleSelectChange("visibility", value);
-                    }}
+                    onSelectionChange={(keys) => handleSelectChange("visibility", keys)} // ✅ ফিক্সড
                   >
                     <Label>Visibility</Label>
                     <Select.Trigger>
@@ -297,7 +290,7 @@ export function EditPrompt({ promptData, promptId, onSuccess }) {
                       isLoading={isLoading}
                       disabled={isLoading}
                     >
-                      {isLoading ? "Saving..." : promptData?.id ? "Update" : "Create"}
+                      {isLoading ? "Saving..." : promptId ? "Update" : "Create"}
                     </Button>
                   </Modal.Footer>
                 </form>
