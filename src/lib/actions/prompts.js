@@ -36,15 +36,36 @@ export const updatePrompt = async (id, data) => {
 
 
 //details page interactions: 
+//for copy
 export const incrementCopyCount = async (id) => {
   try {
-    // const token = await getTokenServer(); 
+    const token = await getTokenServer(); 
     const res = await fetch(`${baseURL}/api/prompts/${id}/copy`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        // authorization: `Bearer ${token}`,
+        authorization: `Bearer ${token}`,
       },
+    });
+
+    const result = await res.json();
+    return result;
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+
+export const submitPromptReview = async (id, reviewData) => {
+  try {
+    const token = await getTokenServer();
+    const res = await fetch(`${baseURL}/api/prompts/${id}/review`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(reviewData),
     });
 
     const result = await res.json();
