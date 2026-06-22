@@ -26,6 +26,26 @@ export const updatePrompt = async (id, data) => {
       },
       body: JSON.stringify(data),
     });
+    
+    const result = await res.json();
+    return result;
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+
+//details page interactions: 
+export const incrementCopyCount = async (id) => {
+  try {
+    // const token = await getTokenServer(); 
+    const res = await fetch(`${baseURL}/api/prompts/${id}/copy`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        // authorization: `Bearer ${token}`,
+      },
+    });
 
     const result = await res.json();
     return result;

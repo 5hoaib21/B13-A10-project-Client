@@ -4,21 +4,36 @@ import React, { useState } from "react";
 import { Share2, Bookmark, Star, Send, MessageCircle, CopyCheck, BookmarkCheck } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { MdReport } from "react-icons/md";
+import { incrementCopyCount } from "@/lib/actions/prompts";
+import { useRouter } from "next/navigation";
 
-export default function PromptInteractions({ promptContent, rating: initialRating, totalReviews, reviews }) {
+export default function PromptInteractions({promptId, promptContent, rating: initialRating, totalReviews, reviews }) {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [isSaved, setIsSaved] = useState(false);
 
-  // Copy Template Functionality 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(promptContent);
-      toast.success("Prompt copied to clipboard!");
-    } catch (err) {
-      toast.error("Failed to copy prompt.");
+  const router = useRouter()
+
+ // Copy Template Functionality 
+const handleCopy = async () => {
+  try {
+   
+    await navigator.clipboard.writeText(promptContent);
+    toast.success("Prompt copied to clipboard!");
+
+    
+    const response = await incrementCopyCount(promptId);
+    
+    if (response.success) {
+      console.log("📈 Copy count incremented in database");
+      router.refresh();
+    } else {
+      console.error("⚠️ Failed to update copy count in DB:", response.error);
     }
-  };
+  } catch (err) {
+    toast.error("Failed to copy prompt.");
+  }
+};
 
   const handleSaveToggle = () => {
     const nextSavedState = !isSaved;
