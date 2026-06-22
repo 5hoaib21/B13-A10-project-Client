@@ -14,11 +14,19 @@ import {
   TextField,
 } from "@heroui/react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { redirect, useRouter, useSearchParams } from "next/navigation";
+
 import React from "react";
 import toast from "react-hot-toast";
 
 export default function SignInPage() {
+
+
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('/redirect') || '/';
+  const router = useRouter()
+
+
   const onSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -26,8 +34,8 @@ export default function SignInPage() {
 
     await authClient.signIn.email({
       ...user,
-      callbackURL: "/",
     });
+    router.push(redirectTo)
     toast.success('welcome')
   };
 

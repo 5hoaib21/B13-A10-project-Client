@@ -18,12 +18,16 @@ import { CiSaveDown1 } from "react-icons/ci";
 import { MdReport } from "react-icons/md";
 import { TbAsset } from "react-icons/tb";
 import { IoAnalytics } from "react-icons/io5";
+import { redirect } from "next/navigation";
 
 export async function DashboardSidebar() {
   const session = await auth.api.getSession({
     headers: await headers()
   })
   const user = session?.user;
+  if(!user){
+    redirect('/signin')
+  }
   const role = user?.role || 'creator';
   // console.log('user', user);
   const dashboardItems = {
@@ -37,7 +41,7 @@ export async function DashboardSidebar() {
       {
         icon: BiMoney,
         label: "My Prompt",
-        link: "/dashboard/user/transactions",
+        link: "/dashboard/user/my-prompt",
       },
       { icon: Gear, label: "Saved Prompts", link: "/dashboard/user/saved-prompt" },
       { icon: Gear, label: "My Reviews", link: "/dashboard/user/my-review" },

@@ -70,13 +70,14 @@ export default function AddPromptForm() {
       copyCount: 0,
       //rating ta database e zacceh na !!!!!!!!!
       ratingCount: 0,
-      status: "pending",
+      status: "approved",
     };
     const result = await addPrompt(promptPayload);
     if(result.insertedId){
       toast.success("Prompt submitted for review successfully!");
-      e.target.reset()
-      redirect('/dashboard/creator/my-prompt')
+      console.log(promptPayload);
+      // e.target.reset()
+      // redirect('/dashboard/creator/my-prompt')
     }
     
     

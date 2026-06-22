@@ -13,10 +13,15 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import PromptInteractions from '@/components/PromptInteractions'; // 💡 Import Client Component Path
+import { getUserSession } from '@/lib/core/session';
+import { redirect } from 'next/navigation';
 
 export default async function PromptDetailsPage({ params }) {
+    
     const { id } = await params;
     const prompt = await getPromptById(id);
+    
+
     
     if (!prompt) return <div className="min-h-screen flex items-center justify-center text-gray-500">Prompt not found.</div>;
 

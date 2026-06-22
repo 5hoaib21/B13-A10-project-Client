@@ -1,16 +1,18 @@
-import { Table, Button, Pagination } from "@heroui/react";
-import { Delete, Edit } from "lucide-react";
+import { DeletePrompt } from "@/components/DeletePrompt";
+import { EditPrompt } from "@/components/EditPrompt";
+import { Table, Pagination } from "@heroui/react"; // Button, toast বাদ দেওয়া হয়েছে
 import Link from "next/link";
 
 export default function MyPromptTable({ promptsData }) {
-    const prompts = promptsData?.data;
-    const page = promptsData?.page;
-    const pages = [];
-    const totalPages = promptsData?.totalPages;
-    for(let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-    }
-    
+  const prompts = promptsData?.data || [];
+  const page = promptsData?.page;
+  const totalPages = promptsData?.totalPages || 0;
+  
+  const pages = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pages.push(i);
+  }
+
   return (
     <Table>
       <Table.ScrollContainer>
@@ -27,21 +29,19 @@ export default function MyPromptTable({ promptsData }) {
           </Table.Header>
           <Table.Body>
             {prompts.map((prompt, index) => (
-              <Table.Row key={index}>
+              <Table.Row key={prompt._id || index}>
                 <Table.Cell>{index + 1}</Table.Cell>
                 <Table.Cell>{prompt?.title}</Table.Cell>
                 <Table.Cell>{prompt?.aiTool}</Table.Cell>
                 <Table.Cell>{prompt?.visibility}</Table.Cell>
                 <Table.Cell>{prompt?.status}</Table.Cell>
-                <Table.Cell>{prompt?.copies || 0}</Table.Cell>
-                <Table.Cell>{prompt?.rating || 0}</Table.Cell>
+                <Table.Cell>{prompt?.copyCount || 0}</Table.Cell>
+                <Table.Cell>{prompt?.ratingCount || 0}</Table.Cell>
                 <Table.Cell className="flex gap-2">
-                  <Button variant="outline" size="sm">
-                    <Edit />
-                  </Button>
-                  <Button variant="danger-soft" size="sm">
-                    <Delete />
-                  </Button>
+                  <EditPrompt promptId={prompt._id} />
+
+                  {/* ক্লায়েন্ট কম্পোনেন্টে আইডি সুন্দরভাবে পাস হচ্ছে */}
+                  <DeletePrompt promptId={prompt._id} />
                 </Table.Cell>
               </Table.Row>
             ))}
@@ -49,35 +49,28 @@ export default function MyPromptTable({ promptsData }) {
         </Table.Content>
       </Table.ScrollContainer>
 
+      {/* Pagination Part (যা আছে তাই থাকবে) */}
       <Table.Footer>
         <Pagination size="sm">
           <Pagination.Content>
             <Pagination.Item>
               <Pagination.Previous isDisabled={page === 1}>
-               <Link className="flex gap-2" href={`/dashboard/creator/my-prompt?page=${page - 1}`}>
-                 <Pagination.PreviousIcon />
-                Prev
-               </Link>
+                <Link className="flex gap-2" href={`/dashboard/creator/my-prompt?page=${page - 1}`}>
+                  <Pagination.PreviousIcon /> Prev
+                </Link>
               </Pagination.Previous>
             </Pagination.Item>
             {pages.map((p) => (
               <Pagination.Item key={p}>
-              <Link 
-              href={`/dashboard/creator/my-prompt?page=${p}`}>
-              <Pagination.Link 
-              
-              isActive={p === page}>
-              {p}
-              </Pagination.Link>
-              </Link>
+                <Link href={`/dashboard/creator/my-prompt?page=${p}`}>
+                  <Pagination.Link isActive={p === page}>{p}</Pagination.Link>
+                </Link>
               </Pagination.Item>
             ))}
             <Pagination.Item>
               <Pagination.Next isDisabled={page === totalPages}>
-              
                 <Link className="flex gap-2" href={`/dashboard/creator/my-prompt?page=${page + 1}`}>
-                    Next
-                <Pagination.NextIcon />
+                  Next <Pagination.NextIcon />
                 </Link>
               </Pagination.Next>
             </Pagination.Item>

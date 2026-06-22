@@ -1,18 +1,25 @@
-import { getPrompts } from '@/lib/api/prompts';
-import React from 'react';
-import MyPromptTable from './PromptTable';
+import { getPrompts } from "@/lib/api/prompts";
+import React from "react";
+import MyPromptTable from "./PromptTable";
+import { EmptyState } from "@/components/ui/EmptyState";
 
-const SellerPromptPage = async ({searchParams}) => {
+const MyPromptPage = async ({ searchParams }) => {
   const params = await searchParams;
-  
+
   const prompts = await getPrompts(params.page); // Fetch prompts from the API
-  
+ 
   return (
-    <div className="flex flex-col gap-4">
-      <div>seller prompts page</div>
-      <MyPromptTable promptsData={prompts} />
+    <div>
+        <div>Prompts Management page</div>
+      <div className="w-10/12 mx-auto">
+    { prompts.data.length == 0 && <EmptyState />}
+      </div>
+      <div className="flex flex-col gap-4">
+
+      {prompts.data.length !== 0 &&  <MyPromptTable promptsData={prompts} />}
+      </div>
     </div>
   );
 };
 
-export default SellerPromptPage;
+export default MyPromptPage;

@@ -29,9 +29,19 @@ const AllPromptsPage = ({ prompt }) => {
     advanced: "bg-rose-500",
   };
 
+  const statusStyles = {
+    approved: "text-emerald-600 bg-emerald-50 border-emerald-100",
+    pending: "text-amber-600 bg-amber-50 border-amber-100",
+    rejected: "text-rose-600 bg-rose-50 border-rose-100",
+    draft: "text-zinc-500 bg-zinc-50 border-zinc-200"
+  };
+
+  const currentStyle = statusStyles[status?.toLowerCase()] || statusStyles.draft;
+
   return (
     <div className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] border border-gray-100 flex flex-col h-full">
       {/* Image Section */}
+      
       <div className="relative w-full h-52 overflow-hidden">
         {image ? (
           <Image
@@ -60,9 +70,9 @@ const AllPromptsPage = ({ prompt }) => {
       <div className="p-5 flex flex-col flex-grow">
         {/* Header: Category + Date */}
         <div className="flex items-center justify-between mb-3">
-          <span className={`text-xs font-bold ${status === 'approved' ? 'text-green-600 bg-green-50' : 'text-red-400 bg-red-100'} px-3 py-1 rounded-full`}>
-            {status || "Draft"}
-          </span>
+          <span className={`text-xs font-bold border px-3 py-1 rounded-full capitalize transition-colors duration-200 ${currentStyle}`}>
+      {status || "Draft"}
+    </span>
           <span className="text-xs text-gray-400 flex items-center gap-1">
             <Clock size={12} />
             {formattedDate}
@@ -91,7 +101,7 @@ const AllPromptsPage = ({ prompt }) => {
         <div className="flex items-center justify-between gap-3 pt-3 border-t border-gray-100">
           <div className="flex items-center gap-3">
             <span className={`text-xs font-medium ${visibility === "public" ? "text-green-600 bg-green-50" : "text-red-400 bg-red-100"} px-2.5 py-1 rounded-full flex items-center gap-1`}>
-             
+              
               {visibility === "public" ? "Public" : "Private"}
             </span>
             <span className="text-xs text-gray-400 flex items-center gap-1">
@@ -100,8 +110,8 @@ const AllPromptsPage = ({ prompt }) => {
             </span>
           </div>
 
-         <Link href={`/prompts/${prompt._id}`}>
-             <Button
+          <Link href={`/prompts/${prompt._id}`}>
+              <Button
             variant="outline"
             className="group/btn relative inline-flex gap-1.5 text-blue-600 hover:text-blue-700 font-semibold text-sm transition-all duration-300 flex items-center"
           >
@@ -112,7 +122,7 @@ const AllPromptsPage = ({ prompt }) => {
             />
             <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-blue-600 group-hover/btn:w-full transition-all duration-300"></span>
           </Button>
-         </Link>
+          </Link>
         </div>
       </div>
     </div>
