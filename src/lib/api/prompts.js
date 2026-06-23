@@ -251,3 +251,26 @@ export const getUserAnalytics = async () => {
     };
   }
 };
+
+
+export const promptManagementByAdmin = async () => {
+  try {
+    const token = await getTokenServer()
+
+    const res = await fetch(`${baseURL}/admin/prompts`, {
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${token}`
+      }
+
+    })
+    if(!res.ok){
+      throw new Error("Failed to fetch all prompt");
+    }
+    const data = await res.json()
+    return data;
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
