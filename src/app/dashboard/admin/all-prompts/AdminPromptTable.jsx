@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-// 🚀 আবার আগের মতো শুধু Table, Button, Modal, Input, Label, TextField ইম্পোর্ট করা হলো
-import { Table, Button, Modal, Input, Label, TextField } from "@heroui/react";
+import { Button, Input, Label, Modal, Table, TextField } from "@heroui/react";
 import { Check, X, Trash2, Eye, ShieldAlert } from "lucide-react";
 
 export default function AdminPromptTable({ initialPrompts }) {
@@ -35,7 +34,6 @@ export default function AdminPromptTable({ initialPrompts }) {
     }
   };
 
-  // স্ট্যাটাসের জন্য কাস্টম লাইট টেলউইন্ড ক্লাস (যা কোনো এরর ছাড়া পারফেক্টলি সেলের ভেতরেই থাকবে)
   const statusStyleMap = {
     approved: "bg-emerald-50 text-emerald-700 border-emerald-200",
     pending: "bg-amber-50 text-amber-700 border-amber-200",
@@ -44,13 +42,12 @@ export default function AdminPromptTable({ initialPrompts }) {
 
   return (
     <>
-      {/* 🚀 হিরো ইউআই ডট নোটেশন রুলস অনুযায়ী টেবিল বিল্ড */}
       <Table aria-label="Prompt Submission Table" className="bg-white text-zinc-800 shadow-none">
         <Table.ScrollContainer>
           <Table.Content className="min-w-[800px]">
-            {/* 🎯 কলাম সংখ্যা মোট ৫টি */}
             <Table.Header>
-              <Table.Column className="text-zinc-700 font-bold bg-zinc-50 border-b border-zinc-200">#</Table.Column>
+              {/* 🚀 এই যে এখানে 'isRowHeader' প্রপ্সটি বসিয়ে দেওয়া হলো, যা এররটা চিরতরে ভ্যানিশ করবে */}
+              <Table.Column isRowHeader className="text-zinc-700 font-bold bg-zinc-50 border-b border-zinc-200">#</Table.Column>
               <Table.Column className="text-zinc-700 font-bold bg-zinc-50 border-b border-zinc-200">TEMPLATE TITLE</Table.Column>
               <Table.Column className="text-zinc-700 font-bold bg-zinc-50 border-b border-zinc-200">AI ENGINE</Table.Column>
               <Table.Column className="text-zinc-700 font-bold bg-zinc-50 border-b border-zinc-200">VISIBILITY</Table.Column>
@@ -60,34 +57,29 @@ export default function AdminPromptTable({ initialPrompts }) {
             <Table.Body>
               {prompts.map((prompt, index) => (
                 <Table.Row key={prompt._id || index} className="border-b border-zinc-100 hover:bg-zinc-50/80 transition-colors">
-                  {/* ১. সিরিয়াল */}
+                  
                   <Table.Cell className="text-zinc-400 font-mono text-xs">{index + 1}</Table.Cell>
                   
-                  {/* ২. টাইটেল */}
                   <Table.Cell>
                     <span className="font-semibold text-zinc-900 text-sm block max-w-[280px] truncate">
                       {prompt?.title}
                     </span>
                   </Table.Cell>
                   
-                  {/* ৩. এআই ইঞ্জিন */}
                   <Table.Cell>
                     <span className="px-2.5 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-purple-50 text-purple-600 uppercase border border-purple-100 inline-block">
                       {prompt?.aiTool || "N/A"}
                     </span>
                   </Table.Cell>
                   
-                  {/* ৪. ভিজিবিলিটি */}
                   <Table.Cell className="text-zinc-600 text-sm capitalize">{prompt?.visibility}</Table.Cell>
                   
-                  {/* ৫. স্ট্যাটাস (ক্লিন কাস্টম ট্যাগ - যা লাইনে সোজা হয়ে থাকবে) */}
                   <Table.Cell className="text-center">
                     <span className={`inline-block px-2.5 py-0.5 text-[11px] font-bold tracking-wider rounded-full border uppercase ${statusStyleMap[prompt?.status || "pending"]}`}>
                       {prompt?.status || "pending"}
                     </span>
                   </Table.Cell>
                   
-                  {/* ৬. অ্যাকশন বাটনসমূহ */}
                   <Table.Cell className="flex items-center justify-end gap-1.5 h-full py-2 pr-6">
                     <Button isIconOnly size="sm" variant="flat" className="bg-zinc-100 hover:bg-zinc-200 text-zinc-600 rounded-md w-7 h-7">
                       <Eye size={14} />
@@ -132,7 +124,7 @@ export default function AdminPromptTable({ initialPrompts }) {
         </Table.ScrollContainer>
       </Table>
 
-      {/* ⚪ রিজেকশন মডাল (আপনার ডট নোটেশন স্ট্রাকচার অনুসারে) */}
+      {/* ⚪ মডাল */}
       <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
         <Modal.Backdrop>
           <Modal.Container placement="auto">
