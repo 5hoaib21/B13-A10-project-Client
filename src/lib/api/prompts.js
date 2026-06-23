@@ -1,4 +1,5 @@
 import { getTokenServer } from "../getTokenServer";
+import { cookies } from "next/headers";
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -110,4 +111,38 @@ export const getMyReviews = async () => {
   }
 };
 
+
+
+
+
+// const getTokenServer = async () => {
+//   const cookieStore = await cookies();
+//   return cookieStore.get("token")?.value; 
+// };
+
+export const getMyProfile = async () => {
+  try {
+    const token = await getTokenServer(); 
+    
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000"}/api/my-profile`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      next: { revalidate: 0 } 
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      return { success: false, error: errorData.error || "Failed to fetch profile" };
+    }
+
+    const result = await res.json();
+    return result; 
+  } catch (error) {
+    console.error("❌ Error in getMyProfile action:", error);
+    return { success: false, error: "Something went wrong connection to server." };
+  }
+};
 
