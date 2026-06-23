@@ -31,7 +31,8 @@ export async function POST(req) {
       metadata: {
         userId: user?.id,
         priceId: PRICE_ID,
-        userEmail: user?.email,
+        customerEmail: user?.email,
+        customerName: user?.name || 'N/A',
         price: request?.price,
       },
       mode: 'payment',

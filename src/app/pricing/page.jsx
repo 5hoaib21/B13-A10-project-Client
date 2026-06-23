@@ -28,7 +28,7 @@ export default function UserPricingPage() {
     {
       name: "Standard Prompt Explorer",
       role: "User",
-      price: "$5",
+      price: "5",
       period: "/one-time payment",
       description: "Perfect for prompt enthusiasts, engineers, and casual prompt buyers.",
       features: [
@@ -44,7 +44,7 @@ export default function UserPricingPage() {
     {
       name: "Premium Prompt Architect",
       role: "Creator",
-      price: "$5",
+      price: "5",
       period: "/one-time payment",
       description: "For prompt engineers and AI creators looking to publish & monetize setups.",
       features: [
@@ -121,7 +121,7 @@ export default function UserPricingPage() {
 
             <div className="flex items-baseline gap-1 py-2 border-b border-zinc-100">
               <span className="text-5xl font-extrabold text-zinc-900 tracking-tight">
-                {plan.price}
+                ${plan.price}
                 {/* <input type="hidden" name="price" value={plan?.price} /> */}
               </span>
               <span className="text-zinc-400 text-xs font-medium lowercase tracking-wide">
