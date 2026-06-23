@@ -18,12 +18,13 @@ import { MagicWand, Compass, ChevronDown } from "@gravity-ui/icons";
 import { CloudUpload, CloudUploadIcon } from "lucide-react";
 import { imageUpload } from "@/lib/actions/imgUpload";
 import { addPrompt } from "@/lib/actions/prompts";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 // import { addPrompt } from "@/lib/actions/prompts";
 
 export default function AddPromptForm() {
   const [mounted, setMounted] = useState(false);
   const [errors, setErrors] = useState({});
+  const router = useRouter()
 
   useEffect(() => {
     setMounted(true);
@@ -51,8 +52,9 @@ export default function AddPromptForm() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
-    const image = await imageUpload(data.image)
     
+    
+    const image = await imageUpload(data.image);
 
     // Validation Check Logic
     const newErrors = {};
@@ -66,22 +68,25 @@ export default function AddPromptForm() {
 
     const promptPayload = {
       ...data,
-      image: image.url,
+      image: image?.url || "",
       copyCount: 0,
-      //rating ta database e zacceh na !!!!!!!!!
-      ratingCount: 0,
+      rating: 0,      
+      ratingCount: 0, 
       status: "approved",
     };
+
     const result = await addPrompt(promptPayload);
-    if(result.insertedId){
+    
+    if (result && result.insertedId) {
       toast.success("Prompt submitted for review successfully!");
-      console.log(promptPayload);
-      // e.target.reset()
-      // redirect('/dashboard/creator/my-prompt')
+      e.target.reset();
+      
+      // 🚀 ক্লায়েন্ট সাইড সেফ রিডাইরেকশন
+      router.push('/prompts'); 
+    } else {
+      // ব্যাকএন্ড গার্ড থেকে কোনো এরর আসলে (যেমন ৩ প্রম্পটের লিমিট ব্লক) তা টোস্টে পপআপ হবে
+      toast.error(result?.error || "Failed to publish prompt asset.");
     }
-    
-    
-    // console.log("Submitting Payload:", payload);
   };
 
   // ✨ Light Theme Polished Global Classes

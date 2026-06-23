@@ -1,14 +1,36 @@
 import AddPromptForm from '@/components/dashboard/AddPromptForm';
 import React from 'react';
-import { Sparkles, ArrowLeft } from 'lucide-react';
+import { Sparkles, ArrowLeft, Zap, ArrowRight, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
+import { getUserSession } from '@/lib/core/session';
+import { redirect } from 'next/navigation';
+import { checkPromptLimitAction } from '@/lib/api/prompts';
 
-const AddPromptPage = () => {
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+const AddPromptPage = async () => {
+    const user = await getUserSession();
+    if(!user){
+        redirect('/signin');
+    }
+
+ 
+    const limitStatus = await checkPromptLimitAction();
+    
+    // এক্সপ্রেস থেকে আসা নিখুঁত true/false এবং প্রম্পট সংখ্যা
+    const isLimitExceeded = limitStatus?.isLimitExceeded || false;
+    const totalPrompts = limitStatus?.totalPrompts || 0;
+
+    console.log('Is Limit Exceeded?:', isLimitExceeded);
+    console.log('Total Prompts Count:', totalPrompts);
+
     return (
         <div className="min-h-screen bg-white text-zinc-900 py-8 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto space-y-8">
                 
-                {/* 🧭 Top Breadcrumb / Nav Link */}
+                {/* 🧭 Top Breadcrumb */}
                 <div className="flex items-center gap-2">
                     <Link 
                         href="/dashboard" 
@@ -19,7 +41,7 @@ const AddPromptPage = () => {
                     </Link>
                 </div>
 
-                {/* 🎯 Header Section Layout */}
+                {/* 🎯 Header Section */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-zinc-100 pb-6">
                     <div className="space-y-1.5">
                         <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 flex items-center gap-2.5">
@@ -29,29 +51,52 @@ const AddPromptPage = () => {
                             Forge New AI Prompt
                         </h1>
                         <p className="text-sm text-zinc-500 max-w-xl">
-                            Create and optimize high-quality prompt configurations. Fill in the structural metadata below to publish onto the community marketplace.
+                            Create and optimize high-quality prompt configurations.
                         </p>
                     </div>
+                </div>
 
-                    {/* Quick Info Chip */}
-                    <div className="hidden sm:flex items-center gap-2 bg-zinc-50 border border-zinc-200/60 rounded-xl px-4 py-2 text-xs font-medium text-zinc-600 h-fit w-fit">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        Prompt Sandbox Active
+                {/* 🛠️ Dynamic UI Switcher - এই কন্ডিশন এখন এক্সপ্রেসের রিয়েল ডেটা দিয়ে পারফেক্টলি চলবে */}
+                {isLimitExceeded ? (
+                    /* 👑 প্রফেশনাল আপগ্রেড স্ক্রিন (লিমিট শেষ হলে ফর্ম ১০০% হাইড হয়ে যাবে) */
+                    <div className="bg-gradient-to-br from-zinc-50 via-zinc-100/30 to-white rounded-3xl border border-zinc-200 p-8 sm:p-12 text-center flex flex-col items-center justify-center space-y-6 max-w-2xl mx-auto shadow-2xs">
+                        <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200/60 flex items-center justify-center text-amber-600 relative">
+                            <ShieldAlert size={32} />
+                            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+                            </span>
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <h3 className="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">
+                                Prompt Creation Limit Reached
+                            </h3>
+                            <p className="text-sm text-zinc-500 max-w-md mx-auto leading-relaxed">
+                                Free tier accounts are capped at <strong className="text-zinc-800">3 prompt blueprints</strong>. You have already published {totalPrompts} prompts to the live marketplace ecosystem.
+                            </p>
+                        </div>
+
+                        <div className="p-4 bg-white border border-zinc-200/60 rounded-2xl w-full max-w-sm flex items-center justify-between text-xs font-medium text-zinc-600">
+                            <span>Current Plan: <span className="text-zinc-900 font-bold">Free Tier</span></span>
+                            <span>Usage: <span className="text-amber-600 font-bold">{totalPrompts} / 3 Used</span></span>
+                        </div>
+
+                        <Link 
+                            href="/pricing" 
+                            className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-semibold text-sm px-6 py-3 rounded-xl shadow-md transition-all duration-200 group cursor-pointer"
+                        >
+                            <Zap size={16} className="fill-current text-amber-400" />
+                            Upgrade to Premium
+                            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                        </Link>
                     </div>
-                </div>
-
-                {/* 🛠️ Dynamic Add Form Container Context Wrapper */}
-                <div className="bg-white rounded-3xl border border-zinc-200/80 p-6 sm:p-8 shadow-xs hover:border-zinc-300/80 transition-all duration-300">
-                    <AddPromptForm />
-                </div>
-
-                {/* 💡 Creator Policy Tip Box */}
-                <div className="bg-zinc-50/50 rounded-2xl p-4 border border-zinc-100 flex gap-3 items-start">
-                    <div className="text-amber-600 mt-0.5 text-sm font-bold">💡</div>
-                    <p className="text-xs text-zinc-500 leading-relaxed">
-                        <strong className="text-zinc-700 font-semibold">Pro-tip:</strong> Make sure to specify clear instructions and placeholder parameters (e.g., <code className="bg-zinc-100 text-zinc-800 px-1 py-0.5 rounded-sm font-mono text-[11px]">[topic]</code>) in your prompt content to make it easier for community members to run and evaluate successfully!
-                    </p>
-                </div>
+                ) : (
+                    /* 📝 লিমিটের ভেতরে থাকলে কেবল এই ফর্মটি স্ক্রিনে রেন্ডার হবে */
+                    <div className="bg-white rounded-3xl border border-zinc-200/80 p-6 sm:p-8 shadow-xs hover:border-zinc-300/80 transition-all duration-300">
+                        <AddPromptForm />
+                    </div>
+                )}
 
             </div>
         </div>
