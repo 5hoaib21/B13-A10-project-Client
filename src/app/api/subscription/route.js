@@ -5,7 +5,9 @@ import { auth } from '@/lib/auth';
 
 
 
-export async function POST() {
+export async function POST(req) {
+  const request = await req.json()
+  console.log('req:', request);
   try {
     const headersList = await headers()
     const origin = headersList.get('origin')
@@ -30,11 +32,12 @@ export async function POST() {
         userId: user?.id,
         priceId: PRICE_ID,
         userEmail: user?.email,
+        price: request?.price,
       },
       mode: 'payment',
       success_url: `${origin}/pricing/success?session_id={CHECKOUT_SESSION_ID}`,
     });
-    return NextResponse.redirect(session.url, 303)
+    return NextResponse.json({url :session.url})
   } catch (err) {
     return NextResponse.json(
       { error: err.message },

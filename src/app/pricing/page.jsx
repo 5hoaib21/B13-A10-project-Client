@@ -4,13 +4,25 @@ import React from "react";
 import { Card, Button } from "@heroui/react";
 import { CircleCheck, Firewall } from "@gravity-ui/icons";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export default function UserPricingPage() {
+  const router = useRouter()
   const { data: session } = authClient.useSession();
   const user = session?.user;
   const userRole = user?.role; // Expected: "User" or "Creator"
   console.log("user", userRole);
 
+  const handlePayment = async (price) => {
+  const res = await   fetch(`/api/subscription`, {
+    method: 'POST',
+    'content-type': 'application/json',
+    body: JSON.stringify({price})
+  })
+  const data = await res.json()
+  router.push(data.url)
+  console.log('data: ',data);
+  }
  // Configured data structure for explicit AI Prompt Marketplace One-Time flat payment layout
   const oneTimePlans = [
     {
@@ -110,6 +122,7 @@ export default function UserPricingPage() {
             <div className="flex items-baseline gap-1 py-2 border-b border-zinc-100">
               <span className="text-5xl font-extrabold text-zinc-900 tracking-tight">
                 {plan.price}
+                {/* <input type="hidden" name="price" value={plan?.price} /> */}
               </span>
               <span className="text-zinc-400 text-xs font-medium lowercase tracking-wide">
                 {plan.period}
@@ -132,9 +145,10 @@ export default function UserPricingPage() {
             </ul>
           </div>
 
-          <form action="/api/subscription" method="POST">
+          <form >
             <Button
-            type="submit"
+            onClick={() => handlePayment(plan?.price)}
+            
             color={plan.popular || filteredPlans.length === 1 ? "primary" : "default"}
             variant={plan.popular || filteredPlans.length === 1 ? "solid" : "bordered"}
             className={`w-full mt-8 h-11 rounded-xl text-sm font-semibold tracking-wide transition-all ${

@@ -39,7 +39,6 @@ export default function AddPromptForm() {
 
     setIsUploading(true);
 
-    // Fake upload emulator simulation (Apnar runtime backend hook mapping eikhane lagaben)
     setTimeout(() => {
       const url = URL.createObjectURL(file);
       setThumbnailUrl(url);
@@ -72,7 +71,7 @@ export default function AddPromptForm() {
       copyCount: 0,
       rating: 0,      
       ratingCount: 0, 
-      status: "approved",
+      status: "pending",
     };
 
     const result = await addPrompt(promptPayload);
