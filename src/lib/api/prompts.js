@@ -146,12 +146,6 @@ export const getMyProfile = async () => {
 };
 
 
-
-
-
-
-
-
 export const getCreatorAnalytics = async () => {
   try {
     const token = await getTokenServer(); 
@@ -179,6 +173,38 @@ export const getCreatorAnalytics = async () => {
     return result; 
   } catch (error) {
     console.error("❌ Error in getCreatorAnalytics action:", error);
+    return { success: false, error: "Something went wrong connecting to server." };
+  }
+};
+
+
+
+export const getUserAnalytics = async () => {
+  try {
+    const token = await getTokenServer(); 
+
+    if (!token) {
+      return { success: false, error: "Token not found. Please login again." };
+    }
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:5000"}/api/user-analytics`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      next: { revalidate: 0 } 
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      return { success: false, error: errorData.error || "Failed to fetch user analytics" };
+    }
+
+    const result = await res.json();
+    return result;
+  } catch (error) {
+    console.error("❌ Error in getUserAnalytics action:", error);
     return { success: false, error: "Something went wrong connecting to server." };
   }
 };
