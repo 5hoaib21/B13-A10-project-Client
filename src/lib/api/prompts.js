@@ -277,7 +277,7 @@ export const usersManagementByAdmin = async () => {
   try {
     const token = await getTokenServer()
 
-    const res = await fetch(`${baseURL}/admin/prompts`, {
+    const res = await fetch(`${baseURL}/admin/users`, {
       headers: {
         'content-type': 'application/json',
         authorization: `Bearer ${token}`
