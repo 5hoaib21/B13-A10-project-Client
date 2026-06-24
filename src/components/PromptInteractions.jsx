@@ -147,8 +147,7 @@ export default function PromptInteractions({
       setIsLoading(false);
     }
   };
-
-  // 🚀 Report Submission
+// 🚀 Report Submission Handler
   const handleReportSubmit = async (e) => {
     e.preventDefault();
     if (!reportReason) {
@@ -164,7 +163,7 @@ export default function PromptInteractions({
       });
 
       if (response.success) {
-        toast.success("Report submitted successfully.");
+        toast.success(response.message || "Report submitted successfully.");
         setReportReason("");
         setReportDescription("");
         setIsModalOpen(false); // মোডাল ক্লোজ
@@ -172,7 +171,7 @@ export default function PromptInteractions({
         toast.error(response.error || "Failed to submit report.");
       }
     } catch (error) {
-      toast.error("Failed to submit report.");
+      toast.error("Something went wrong. Failed to submit report.");
     } finally {
       setIsReporting(false);
     }

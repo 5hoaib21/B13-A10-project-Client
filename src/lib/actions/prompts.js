@@ -101,8 +101,14 @@ export const submitPromptReport = async (id, reportData) => {
     });
 
     const result = await res.json();
+    
+    if (!res.ok) {
+      return { success: false, error: result.message || "Failed to submit report" };
+    }
+    
     return result;
   } catch (error) {
+    console.error("Error in submitPromptReport action:", error);
     return { success: false, error: error.message };
   }
 };
