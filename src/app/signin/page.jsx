@@ -41,7 +41,7 @@ export default function SignInPage() {
     const data = await authClient.signIn.social({
       provider: 'google',
     }) 
-    console.log('data',data);
+    // console.log('data',data);
   }
 
   return (

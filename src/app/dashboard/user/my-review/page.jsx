@@ -39,7 +39,7 @@ export default async function UserMyReviewPage() {
             
             {myReviews.length === 0 ? (
                 <div className="text-center py-12 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
-                    <p className="text-gray-500 mb-4">You haven't reviewed any prompts yet.</p>
+                    <p className="text-gray-500 mb-4">You haven`t reviewed any prompts yet.</p>
                     <Link href="/prompts" className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition">
                         Explore Prompts & Share Feedback <ArrowRight size={16} />
                     </Link>

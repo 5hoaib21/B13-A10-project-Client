@@ -1,9 +1,11 @@
+
 import { Button } from "@heroui/react";
 import { Copy, Clock, ArrowRight, Sparkles, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-const AllPromptsPage = ({ prompt }) => {
+const AllPromptsPage = async ({ prompt }) => {
+  
   const {
     title,
     description,

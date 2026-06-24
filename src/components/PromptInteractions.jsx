@@ -9,6 +9,8 @@ import {
   MessageCircle,
   CopyCheck,
   BookmarkCheck,
+  Lock, 
+  Sparkles, // 💡 [UPDATE]: স্পার্কলস আইকন নিশ্চিত করার জন্য ইম্পোর্ট করা হয়েছে
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { MdReport } from "react-icons/md";
@@ -19,8 +21,8 @@ import {
   submitPromptReport,
 } from "@/lib/actions/prompts";
 import { useRouter } from "next/navigation";
+import Link from "next/link"; // 💡 [UPDATE]: আপগ্রেড লিংকের জন্য Link ইম্পোর্ট করা হয়েছে
 
-// 🚀 আপনার দেওয়া লেটেস্ট HeroUI আর্কিটেকচার অনুযায়ী ইম্পোর্ট
 import {
   Button,
   Input,
@@ -39,6 +41,8 @@ export default function PromptInteractions({
   reviews,
   bookmarks = [],
   currentUserId,
+  isLocked = false, 
+  user,
 }) {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -46,14 +50,15 @@ export default function PromptInteractions({
   const [isLoading, setIsLoading] = useState(false);
   const [isReporting, setIsReporting] = useState(false);
 
-  // 🚀 মোডাল ওপেন এবং ফর্ম স্টেট
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reportReason, setReportReason] = useState("");
   const [reportDescription, setReportDescription] = useState("");
 
   const router = useRouter();
 
-  // Helper static stars calculation
+  // 🎯 [UPDATE]: ইউজার প্রো প্ল্যানে আছে কি না তা যাচাই করার সহজ ভেরিয়েবল
+  const isProUser = user?.plan === "pro";
+
   const renderStarsStatic = (num) => {
     const fullStars = Math.floor(num);
     return (
@@ -62,25 +67,23 @@ export default function PromptInteractions({
           <Star
             key={i}
             size={16}
-            className={
-              i < fullStars
-                ? "text-yellow-400 fill-yellow-400"
-                : "text-gray-300"
-            }
+            className={i < fullStars ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}
           />
         ))}
       </div>
     );
   };
 
-  // Copy Template Functionality
   const handleCopy = async () => {
+    if (isLocked) {
+      toast.error("Premium Prompt! Please upgrade your plan to unlock.");
+      return;
+    }
     try {
       await navigator.clipboard.writeText(promptContent);
       toast.success("Prompt copied to clipboard!");
 
       const response = await incrementCopyCount(promptId);
-
       if (response.success) {
         console.log("📈 Copy count incremented in database");
         router.refresh();
@@ -93,9 +96,12 @@ export default function PromptInteractions({
   };
 
   const handleSaveToggle = async () => {
+    if (isLocked) {
+      toast.error("Saving private prompts requires a Pro plan.");
+      return;
+    }
     try {
       const response = await togglePromptBookmark(promptId);
-
       if (response.success) {
         setIsSaved(response.isSaved);
         if (response.isSaved) {
@@ -105,10 +111,7 @@ export default function PromptInteractions({
         }
         router.refresh();
       } else {
-        toast.error(
-          response.error ||
-            "Failed to update bookmark. Make sure you are logged in.",
-        );
+        toast.error(response.error || "Failed to update bookmark. Make sure you are logged in.");
       }
     } catch (error) {
       console.error("❌ Bookmark error:", error);
@@ -118,13 +121,19 @@ export default function PromptInteractions({
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
+    
+    // 🎯 [UPDATE]: সিকিউরিটি গার্ড - ফ্রি ইউজার ডেভটুলস দিয়ে বাটন আনলক করলেও সাবমিট আটকে যাবে
+    if (!isProUser) {
+      toast.error("Writing reviews is a Pro feature.");
+      return;
+    }
+
     if (rating === 0) {
       toast.error("Please select a rating star first.");
       return;
     }
 
     setIsLoading(true);
-
     try {
       const reviewPayload = { rating, comment };
       const response = await submitPromptReview(promptId, reviewPayload);
@@ -135,10 +144,7 @@ export default function PromptInteractions({
         setRating(0);
         router.refresh();
       } else {
-        toast.error(
-          response.error ||
-            "Failed to submit review. Make sure you are logged in.",
-        );
+        toast.error(response.error || "Failed to submit review. Make sure you are logged in.");
       }
     } catch (error) {
       console.error("❌ Error submitting review:", error);
@@ -147,7 +153,7 @@ export default function PromptInteractions({
       setIsLoading(false);
     }
   };
-// 🚀 Report Submission Handler
+
   const handleReportSubmit = async (e) => {
     e.preventDefault();
     if (!reportReason) {
@@ -166,7 +172,7 @@ export default function PromptInteractions({
         toast.success(response.message || "Report submitted successfully.");
         setReportReason("");
         setReportDescription("");
-        setIsModalOpen(false); // মোডাল ক্লোজ
+        setIsModalOpen(false);
       } else {
         toast.error(response.error || "Failed to submit report.");
       }
@@ -183,35 +189,51 @@ export default function PromptInteractions({
       <div className="flex flex-wrap gap-3">
         <button
           onClick={handleCopy}
-          className="flex-1 min-w-[120px] bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg active:scale-98 cursor-pointer"
+          className={`flex-1 min-w-[120px] font-medium py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 active:scale-98 cursor-pointer ${
+            isLocked
+              ? "bg-zinc-100 text-zinc-400 cursor-not-allowed border border-zinc-200"
+              : "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md hover:shadow-lg"
+          }`}
         >
-          <CopyCheck size={18} />
+          {isLocked ? <Lock size={18} /> : <CopyCheck size={18} />}
           Copy Prompt
         </button>
 
-        {/* 🚀 Report Button Trigger */}
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="flex-1 min-w-[120px] bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 px-6 rounded-xl transition-all duration-300 border border-gray-200 flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <MdReport size={18} className="text-red-500" />
-          Report
-        </button>
+        {/* 🎯 [UPDATE]: Report Button - ফ্রি ইউজার হলে এটি গ্লাসমরফিজম স্টাইলে লক থাকবে এবং মাউস হোভার করলে সুন্দর 'Pro Feature' টেক্সট দেখাবে */}
+        {!isProUser ? (
+          <div className="flex-1 min-w-[120px] relative border border-gray-200 bg-gray-50 text-gray-400 font-medium py-3 px-6 rounded-xl flex items-center justify-center gap-2 select-none overflow-hidden group">
+            <div className="absolute inset-0 bg-white/70 backdrop-blur-[1px] flex items-center justify-center text-xs font-bold text-amber-600 gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <Lock size={12} /> Pro Feature
+            </div>
+            <MdReport size={18} className="text-gray-300" />
+            Report
+          </div>
+        ) : (
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex-1 min-w-[120px] bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 px-6 rounded-xl transition-all duration-300 border border-gray-200 flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <MdReport size={18} className="text-red-500" />
+            Report
+          </button>
+        )}
 
         <button
           onClick={handleSaveToggle}
           className={`flex-1 min-w-[120px] font-medium py-3 px-6 rounded-xl transition-all duration-300 border flex items-center justify-center gap-2 active:scale-98 cursor-pointer ${
-            isSaved
-              ? "bg-indigo-50 border-indigo-200 text-indigo-600 font-semibold"
-              : "bg-white hover:bg-zinc-50 text-zinc-700 border-zinc-200"
+            isLocked
+              ? "bg-zinc-100 text-zinc-400 cursor-not-allowed border border-zinc-200"
+              : isSaved
+                ? "bg-indigo-50 border-indigo-200 text-indigo-600 font-semibold"
+                : "bg-white hover:bg-zinc-50 text-zinc-700 border-zinc-200"
           }`}
         >
-          {isSaved ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
-          {isSaved ? "Saved" : "Save"}
+          {isLocked ? <Lock size={18} /> : isSaved ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
+          {isSaved && !isLocked ? "Saved" : "Save"}
         </button>
       </div>
 
-      {/* 🚀 NEW HEROUI REPORT MODAL (Your custom dot-architecture) */}
+      {/* 🚀 NEW HEROUI REPORT MODAL */}
       <Modal isOpen={isModalOpen} onOpenChange={setIsModalOpen}>
         <Modal.Backdrop>
           <Modal.Container placement="center">
@@ -228,12 +250,7 @@ export default function PromptInteractions({
               </Modal.Header>
 
               <Modal.Body className="py-4">
-                <form
-                  onSubmit={handleReportSubmit}
-                  className="flex flex-col gap-4"
-                >
-                  {/* HeroUI Custom Select Dropdown */}
-
+                <form onSubmit={handleReportSubmit} className="flex flex-col gap-4">
                   <div className="w-full flex flex-col gap-1.5">
                     <label className="text-sm font-medium text-gray-700">
                       Select Report Reason
@@ -252,19 +269,13 @@ export default function PromptInteractions({
                       <option value="" disabled className="text-gray-400">
                         Choose a reason
                       </option>
-                      <option
-                        value="Inappropriate Content"
-                        className="text-gray-900 py-2"
-                      >
+                      <option value="Inappropriate Content" className="text-gray-900 py-2">
                         Inappropriate Content
                       </option>
                       <option value="Spam" className="text-gray-900 py-2">
                         Spam
                       </option>
-                      <option
-                        value="Copyright Violation"
-                        className="text-gray-900 py-2"
-                      >
+                      <option value="Copyright Violation" className="text-gray-900 py-2">
                         Copyright Violation
                       </option>
                       <option value="Other" className="text-gray-900 py-2">
@@ -272,12 +283,7 @@ export default function PromptInteractions({
                       </option>
                     </select>
                   </div>
-                  {/* HeroUI Text Field Input */}
-                  <TextField
-                    className="w-full"
-                    name="description"
-                    variant="secondary"
-                  >
+                  <TextField className="w-full" name="description" variant="secondary">
                     <Label className="text-sm font-medium text-gray-700">
                       Description (Optional)
                     </Label>
@@ -326,68 +332,91 @@ export default function PromptInteractions({
           </div>
         </div>
 
-        {/* 🌟 Interactive Form Area */}
-        <div className="bg-gray-50 rounded-xl p-5 border border-gray-200 mb-5">
-          <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-            <Star size={16} className="text-yellow-400 fill-yellow-400" />
-            Write a Review
-          </h4>
+        {/* 🎯 [UPDATE]: Interactive Form Area কন্টেইনারকে relative ও পজিশন দিয়ে ব্লার লেয়ার তৈরি করা হয়েছে */}
+        <div className="relative border border-gray-200 rounded-xl overflow-hidden mb-5">
+          
+          {/* রিভিউ ফর্মের ভেতরের অংশ - ফ্রি ইউজার হলে blur-md ইফেক্ট পাবে */}
+          <div className={`bg-gray-50 p-5 transition-all duration-300 ${!isProUser ? "blur-md pointer-events-none opacity-20 select-none" : ""}`}>
+            <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <Star size={16} className="text-yellow-400 fill-yellow-400" />
+              Write a Review
+            </h4>
 
-          <form onSubmit={handleSubmitReview} className="space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Your Rating:</span>
-              <div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    disabled={isLoading}
-                    onClick={() => setRating(star)}
-                    className="hover:scale-110 active:scale-95 transition-transform duration-150 focus:outline-none"
-                  >
-                    <Star
-                      size={24}
-                      className={`transition-colors duration-200 ${star <= rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
-                    />
-                  </button>
-                ))}
+            <form onSubmit={handleSubmitReview} className="space-y-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">Your Rating:</span>
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      disabled={isLoading}
+                      onClick={() => setRating(star)}
+                      className="hover:scale-110 active:scale-95 transition-transform duration-150 focus:outline-none"
+                    >
+                      <Star
+                        size={24}
+                        className={`transition-colors duration-200 ${star <= rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
+                      />
+                    </button>
+                  ))}
+                </div>
+                <span className="text-sm font-bold text-gray-700 ml-2">
+                  {rating > 0 ? `${rating}.0` : "0.0"}
+                </span>
               </div>
-              <span className="text-sm font-bold text-gray-700 ml-2">
-                {rating > 0 ? `${rating}.0` : "0.0"}
-              </span>
-            </div>
 
-            <div>
-              <textarea
-                value={comment}
+              <div>
+                <textarea
+                  value={comment}
+                  disabled={isLoading}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder="Write your review here. What worked? How did you test it?"
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none text-sm outline-none"
+                  rows="3"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
                 disabled={isLoading}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Write your review here. What worked? How did you test it?"
-                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none text-sm outline-none"
-                rows="3"
-                required
-              />
-            </div>
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-2.5 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+              >
+                <Send size={18} />
+                {isLoading ? "Submitting..." : "Submit Review"}
+              </button>
+            </form>
+          </div>
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-2.5 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
-            >
-              <Send size={18} />
-              {isLoading ? "Submitting..." : "Submit Review"}
-            </button>
-          </form>
+          {/* 🔒 [UPDATE]: ফ্রি ইউজারদের জন্য প্রিমিয়াম গ্লাস-ব্লার লক ওভারলে কার্ড উইজেট */}
+          {!isProUser && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/10 backdrop-blur-[2px] p-4 text-center z-10 select-none">
+              <div className="p-2 bg-white border border-zinc-100 rounded-xl shadow-md text-amber-600 mb-2 animate-pulse">
+                <Lock size={16} className="stroke-[2.5]" />
+              </div>
+              <h4 className="text-xs font-bold text-gray-900 flex items-center justify-center gap-1">
+                <Sparkles size={12} className="text-amber-500 fill-amber-500" />
+                Unlock Ratings & Reviews
+              </h4>
+              <p className="text-[11px] text-gray-500 max-w-[240px] mt-1 leading-normal">
+                Join our <span className="font-semibold text-zinc-900">Pro Membership</span> to rate blueprints and share your engineering feedback.
+              </p>
+              <Link
+                href="/pricing"
+                className="mt-2.5 px-3.5 py-1.5 text-[11px] font-bold text-white bg-zinc-950 rounded-xl hover:bg-zinc-800 transition-all shadow-sm active:scale-95 inline-block"
+              >
+                Upgrade to Pro
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Reviews Iteration Layer */}
         {reviews && reviews.length > 0 ? (
           <div className="space-y-4 mb-6">
             {reviews.map((review, index) => (
-              <div
-                key={index}
-                className="bg-gray-50 rounded-xl p-4 border border-gray-100"
-              >
+              <div key={index} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">

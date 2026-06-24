@@ -5,7 +5,7 @@ import { Avatar, Button, Dropdown, Label } from "@heroui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { BiLogOut } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
@@ -13,11 +13,13 @@ import { MdDashboard } from "react-icons/md";
 import { TbPrompt } from "react-icons/tb";
 import { RiDashboardHorizontalLine } from "react-icons/ri";
 import { FiMenu, FiX } from "react-icons/fi";
+import { Coins, Home, Terminal } from "lucide-react";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const router = useRouter()
 
   const { data: session } = authClient.useSession();
   const user = session?.user;
@@ -33,6 +35,7 @@ const Navbar = () => {
 
   const handleSignOut = async () => {
     await authClient.signOut();
+    router.refresh()
   };
 
   const isActive = (path) => {
@@ -43,8 +46,9 @@ const Navbar = () => {
   };
 
   const navLinks = [
+    { href: "/", label: "Home", icon: Home },
     { href: "/prompts", label: "All Prompts", icon: TbPrompt },
-    { href: "/pricing", label: "Pricing", icon: null },
+    { href: "/pricing", label: "Pricing", icon: Coins },
     ...(user ?[{ href: `/dashboard/${user?.role}`, label: "Dashboard", icon: RiDashboardHorizontalLine }] : []),
   ];
 
@@ -84,14 +88,7 @@ const Navbar = () => {
 
             <Link href="/" className="group flex items-center gap-3">
               <div className="relative">
-                <Image
-                  height={40}
-                  width={40}
-                  loading="eager"
-                  src="/logo3.png"
-                  alt="Tech Bazaar"
-                  className="transition-transform duration-300 group-hover:scale-110"
-                />
+                <Terminal />
                 <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 blur transition-opacity group-hover:opacity-20" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">

@@ -18,6 +18,8 @@ import { redirect } from "next/navigation";
 import React from "react";
 import toast from "react-hot-toast";
 
+import { Icon } from "@iconify/react";
+
 export default function SignUpPage() {
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -32,6 +34,13 @@ export default function SignUpPage() {
 
     redirect('/')
   };
+
+  const handleGoogleSignin = async () => {
+      const data = await authClient.signIn.social({
+        provider: 'google',
+      }) 
+      // console.log('data',data);
+    }
 
   return (
     <div className="flex items-center justify-center rounded-3xl bg-surface p-6 max-w-2xl mx-auto border mt-30">
@@ -93,6 +102,24 @@ export default function SignUpPage() {
       <div className="flex justify-center my-3">
         <h2>Already have an Account? <Link href={'/signin'}><span className="text-blue-400 hover:underline">signin instead</span></Link></h2>
       </div>
+
+      <div className="flex flex-col gap-3">
+                <Button
+                onClick={handleGoogleSignin} 
+                className="w-full" 
+                variant="tertiary">
+                  <Icon icon="devicon:google" />
+                  Sign in with Google
+                </Button>
+                <Button isDisabled className="w-full" variant="tertiary">
+                  <Icon icon="mdi:github" />
+                  Sign in with GitHub
+                </Button>
+                <Button isDisabled className="w-full" variant="tertiary">
+                  <Icon icon="ion:logo-apple" />
+                  Sign in with Apple
+                </Button>
+              </div>
       </Surface>
     </div>
   );

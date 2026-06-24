@@ -9,13 +9,16 @@ import {
   Tag,
   Sparkles,
   CopyCheck,
+  Lock, // 💡 [UPDATE]: লক আইকন ইম্পোর্ট করা হয়েছে
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import PromptInteractions from "@/components/PromptInteractions"; // 💡 Import Client Component Path
-
+import PromptInteractions from "@/components/PromptInteractions";
+import { getUserSession } from "@/lib/core/session";
 
 export default async function PromptDetailsPage({ params }) {
+  const user = await getUserSession();
+  console.log("user: ", user);
   const { id } = await params;
   const prompt = await getPromptById(id);
 
@@ -44,6 +47,16 @@ export default async function PromptDetailsPage({ params }) {
     reviews = [],
   } = prompt;
 
+  // 🎯 [UPDATE START]: প্রো মেম্বারশিপ লক কন্ডিশনাল লজিক
+  // যদি প্রম্পটটি "private" হয় এবং ইউজারের plan "pro" না হয় (বা ইউজার লগইন না থাকে)
+  const isLocked = visibility === "private" && user?.plan !== "pro";
+
+  // সিকিউরিটি প্রোটেকশন: লক থাকলে ক্লায়েন্ট সাইডে আসল content-এর বদলে ডামি টেক্সট পাঠানো হচ্ছে, যেন ডাটা লিক না হয়
+  const safeContent = isLocked
+    ? "This content is locked. Please upgrade to a Pro plan to view the full prompt blueprint."
+    : content;
+  // 🎯 [UPDATE END]
+
   const formattedDate = new Date(createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -71,7 +84,6 @@ export default async function PromptDetailsPage({ params }) {
       ? tags.split(",").map((tag) => tag.trim())
       : [];
 
-  // Helper static full calculation
   const renderServerStars = (ratingNum) => {
     const fullStars = Math.floor(ratingNum);
     return (
@@ -94,7 +106,6 @@ export default async function PromptDetailsPage({ params }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 py-8 px-4">
       <div className="max-w-6xl mx-auto">
-        {/* Back Link */}
         <Link
           href="/prompts"
           className="inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors duration-300 mb-6 group"
@@ -107,7 +118,6 @@ export default async function PromptDetailsPage({ params }) {
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Grid Layout Stack */}
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="relative w-full h-64 bg-gradient-to-r from-blue-500 to-purple-600">
@@ -126,7 +136,13 @@ export default async function PromptDetailsPage({ params }) {
                   </div>
                 )}
 
-                <div className="absolute top-4 right-4">
+                <div className="absolute top-4 right-4 flex gap-2">
+                  {/* 💡 [UPDATE]: প্রম্পটটি প্রাইভেট ও লক হলে একটি প্রিমিয়াম ট্যাগ ব্যাজ দেখাবে */}
+                  {isLocked && (
+                    <span className="px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-sm bg-amber-500 text-white shadow-lg flex items-center gap-1">
+                      <Lock size={12} /> Pro Exclusive
+                    </span>
+                  )}
                   <span
                     className={`px-4 py-2 rounded-full text-xs font-semibold backdrop-blur-sm bg-white/90 shadow-lg ${
                       status === "pending"
@@ -155,13 +171,58 @@ export default async function PromptDetailsPage({ params }) {
                   {description}
                 </p>
 
-                <div className="bg-gray-50 rounded-xl p-5 border border-gray-200 mb-4">
+                {/* 🎯 [UPDATE]: প্রম্পট বক্স কন্টেইনার - লক থাকলে রিলেটিভ পজিশন ও সিলেকশন অফ করার জন্য ক্লাস ডাইনামিক করা হয়েছে */}
+                {/* 🎯 [UPDATE]: এখানে min-h কে ডাইনামিক করা হয়েছে। লক থাকলে min-h-[185px] থাকবে যাতে ভেতরের লক উইজেট কেটে না যায় এবং গ্লাস ইফেক্ট সুন্দর লাগে। লক না থাকলে স্বাভাবিক নিয়মে min-h-0 বা h-auto হয়ে যাবে */}
+                <div
+                  className={`relative bg-gray-50 rounded-xl p-5 border border-gray-200 mb-4 overflow-hidden transition-all duration-300 ${isLocked ? "min-h-[185px] select-none" : ""}`}
+                >
                   <h3 className="text-sm font-semibold text-gray-700 mb-2">
                     Prompt Template
                   </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed font-mono whitespace-pre-wrap">
-                    {content}
+
+                  {/* 🎯 [UPDATE]: ব্লার ইফেক্ট ফিরিয়ে আনা হয়েছে (blur-md) এবং টেক্সট অপাসিটি হালকা রাখা হয়েছে */}
+                  <p
+                    className={`text-gray-600 text-sm leading-relaxed font-mono whitespace-pre-wrap transition-all duration-300 ${isLocked ? "blur-md pointer-events-none opacity-30 select-none" : ""}`}
+                  >
+                    {safeContent}
                   </p>
+
+                  {/* 🔒 লকড ওভারলে সেকশন */}
+                  {isLocked && (
+                    // 💡 [UPDATE]: bg-white/20 এবং backdrop-blur-md একসাথে দেওয়া হয়েছে যাতে আসল প্রিমিয়াম গ্লাস লুক (Blurry Effect) ফিরে আসে এবং ব্যাকগ্রাউন্ড কেটে না যায়
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/0.5 backdrop-blur-md p-4 text-center z-10 select-none">
+                      {/* আইকন বক্স */}
+                      <div className="p-2 bg-white/80 border border-zinc-200/50 rounded-xl shadow-sm text-amber-600 mb-1.5 animate-pulse">
+                        <Lock size={16} className="stroke-[2.5]" />
+                      </div>
+
+                      {/* হেডার */}
+                      <h4 className="text-xs font-bold text-gray-900 flex items-center justify-center gap-1">
+                        <Sparkles
+                          size={12}
+                          className="text-amber-500 fill-amber-500"
+                        />
+                        Unlock Private Blueprint
+                      </h4>
+
+                      {/* ডেসক্রিপশন */}
+                      <p className="text-[11px] text-gray-500 max-w-[250px] mt-1 leading-normal">
+                        Upgrade to a{" "}
+                        <span className="font-semibold text-zinc-900">
+                          Pro Plan
+                        </span>{" "}
+                        to view, copy, and forge this high-engineered pipeline.
+                      </p>
+
+                      {/* বাটন */}
+                      <Link
+                        href="/pricing"
+                        className="mt-2.5 px-3.5 py-1.5 text-[11px] font-bold text-white bg-zinc-950 rounded-xl hover:bg-zinc-800 transition-all shadow-sm active:scale-95 inline-block"
+                      >
+                        Upgrade to Pro
+                      </Link>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex flex-wrap gap-2">
@@ -177,7 +238,6 @@ export default async function PromptDetailsPage({ params }) {
               </div>
             </div>
 
-            {/* 💡 CALL INTERACTION CLIENT ELEMENT */}
             <PromptInteractions
               promptId={prompt._id}
               promptContent={content}
@@ -185,10 +245,12 @@ export default async function PromptDetailsPage({ params }) {
               totalReviews={totalReviews}
               reviews={reviews}
               currentUserId={prompt.userId}
+              isLocked={isLocked} // 💡 [UPDATE]: ক্লায়েন্ট কম্পোনেন্টে লকিং ফ্ল্যাগ পাস করা হলো
+              user={user}
             />
           </div>
 
-          {/* Right Grid Sidebar Layout */}
+          {/* Right Grid Sidebar */}
           <div className="space-y-6">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-6">
               <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
@@ -243,7 +305,10 @@ export default async function PromptDetailsPage({ params }) {
                     <Eye size={16} className="text-gray-600" />
                     <span className="text-sm text-gray-600">Visibility</span>
                   </div>
-                  <span className="text-sm font-semibold text-gray-800 capitalize">
+                  {/* 💡 [UPDATE]: কন্ডিশনাল টেক্সট কালার দেওয়া হয়েছে ভিজিবিলিটিতে */}
+                  <span
+                    className={`text-sm font-semibold capitalize ${visibility === "private" ? "text-amber-600" : "text-green-600"}`}
+                  >
                     {visibility}
                   </span>
                 </div>
