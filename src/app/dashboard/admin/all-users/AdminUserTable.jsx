@@ -3,19 +3,35 @@
 import React, { useState } from "react";
 import { Table, Chip, Select, ListBox, Button } from "@heroui/react";
 import { Trash2 } from "lucide-react";
+import { updateUserRoleAction } from "@/lib/actions/users";
+
+
 
 export default function AdminUserTable({ initialUsers }) {
   const [users, setUsers] = useState(initialUsers);
 
-  // রোল আপডেট করার হ্যান্ডলার ফাংশন
-  const handleRoleChange = (userId, newRole) => {
-    console.log(`Updating User ${userId} role to: ${newRole}`);
-    setUsers((prev) =>
-      prev.map((u) => (u._id?.$oid === userId || u._id === userId ? { ...u, role: newRole } : u))
-    );
-  };
+ const handleRoleChange = async (userId, key) => {
+  const newRole = typeof key === "object" ? Array.from(key)[0] : key; 
+  
+  if (!newRole) return;
 
-  // ইউজার ডিলিট করার হ্যান্ডলার ফাংশন
+  try {
+    const res = await updateUserRoleAction(userId, newRole);
+
+    if (res.success) {
+      setUsers((prev) =>
+        prev.map((u) => (u._id?.$oid === userId || u._id === userId ? { ...u, role: newRole } : u))
+      );
+      alert(res.message);
+    } else {
+      alert(res.message);
+    }
+  } catch (error) {
+    console.error("Failed to update role:", error);
+    alert("Something went wrong!");
+  }
+};
+
   const handleDeleteUser = (userId) => {
     if (confirm("Are you sure you want to permanently delete this user?")) {
       setUsers((prev) => prev.filter((u) => (u._id?.$oid !== userId && u._id !== userId)));
@@ -26,8 +42,6 @@ export default function AdminUserTable({ initialUsers }) {
     <Table aria-label="User Management Table" className="bg-white text-zinc-800 shadow-none">
       <Table.ResizableContainer>
         <Table.Content aria-label="Table with resizable columns" className="min-w-[750px]">
-          
-          {/* 🎯 মোট কলাম সংখ্যা ৫টি (রেজিস্ট্রেশন ডেট বাদ দেওয়া হয়েছে) */}
           <Table.Header>
             <Table.Column isRowHeader defaultWidth="1.5fr" id="profile" minWidth={220} className="text-zinc-700 font-bold bg-zinc-50 border-b border-zinc-200">
               PROFILE DETAILS
@@ -56,8 +70,6 @@ export default function AdminUserTable({ initialUsers }) {
 
               return (
                 <Table.Row key={userId} className="border-b border-zinc-100 hover:bg-zinc-50/80 transition-colors">
-                  
-                  {/* ১. PROFILE DETAILS (ইমেজ + নাম) */}
                   <Table.Cell>
                     <div className="flex items-center gap-3">
                       <img 
@@ -70,12 +82,10 @@ export default function AdminUserTable({ initialUsers }) {
                     </div>
                   </Table.Cell>
 
-                  {/* ২. EMAIL ADDRESS */}
                   <Table.Cell>
                     <span className="text-zinc-600 text-sm">{user?.email || "N/A"}</span>
                   </Table.Cell>
 
-                  {/* ৩. SUBSCRIPTION (PRO / FREE) */}
                   <Table.Cell>
                     <Chip 
                       color={user?.plan === "pro" ? "success" : "default"} 
@@ -87,7 +97,6 @@ export default function AdminUserTable({ initialUsers }) {
                     </Chip>
                   </Table.Cell>
 
-                  {/* ৪. ROLE LEVEL ড্রপডাউন সিলেক্ট */}
                   <Table.Cell>
                     <Select 
                       className="w-full max-w-[130px]" 
@@ -101,21 +110,14 @@ export default function AdminUserTable({ initialUsers }) {
                       </Select.Trigger>
                       <Select.Popover className="bg-white border border-zinc-200 rounded-xl shadow-lg">
                         <ListBox>
-                          <ListBox.Item id="user" textValue="User" className="text-xs text-zinc-700 hover:bg-zinc-50 rounded-md">
-                            User
-                          </ListBox.Item>
-                          <ListBox.Item id="creator" textValue="Creator" className="text-xs text-zinc-700 hover:bg-zinc-50 rounded-md">
-                            Creator
-                          </ListBox.Item>
-                          <ListBox.Item id="admin" textValue="Admin" className="text-xs text-zinc-700 hover:bg-zinc-50 rounded-md">
-                            Admin
-                          </ListBox.Item>
+                          <ListBox.Item id="user" textValue="User" className="text-xs text-zinc-700 hover:bg-zinc-50 rounded-md">User</ListBox.Item>
+                          <ListBox.Item id="creator" textValue="Creator" className="text-xs text-zinc-700 hover:bg-zinc-50 rounded-md">Creator</ListBox.Item>
+                          <ListBox.Item id="admin" textValue="Admin" className="text-xs text-zinc-700 hover:bg-zinc-50 rounded-md">Admin</ListBox.Item>
                         </ListBox>
                       </Select.Popover>
                     </Select>
                   </Table.Cell>
 
-                  {/* ৫. ACTIONS (ডিলিট বাটন) */}
                   <Table.Cell className="text-right pr-6">
                     <Button 
                       isIconOnly 
@@ -127,12 +129,10 @@ export default function AdminUserTable({ initialUsers }) {
                       <Trash2 size={14} />
                     </Button>
                   </Table.Cell>
-
                 </Table.Row>
               );
             })}
           </Table.Body>
-
         </Table.Content>
       </Table.ResizableContainer>
     </Table>

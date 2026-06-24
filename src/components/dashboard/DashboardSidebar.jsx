@@ -78,7 +78,7 @@ export async function DashboardSidebar() {
         link: "/dashboard/admin/all-payments",
       },
       { icon: MdReport, label: "Reports", link: "/dashboard/admin/reports" },
-      { icon: IoAnalytics, label: "Analytics", link: "/dashboard/admin/analytics" },
+      // { icon: IoAnalytics, label: "Analytics", link: "/dashboard/admin/analytics" },
     ],
   };
 

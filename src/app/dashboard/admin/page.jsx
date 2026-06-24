@@ -3,8 +3,7 @@ import React from 'react';
 const AdminDashboardHomePage = () => {
     return (
         <div>
-            AdminDashboardHomePage
-AdminDashboardHomePage
+           Analytics page
         </div>
     );
 };
