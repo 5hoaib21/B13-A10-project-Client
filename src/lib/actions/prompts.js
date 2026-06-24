@@ -107,3 +107,68 @@ export const submitPromptReport = async (id, reportData) => {
   }
 };
 
+
+
+export async function updatePromptStatusAction(promptId, newStatus) {
+  const token = await getTokenServer();
+  try {
+    const res = await fetch(`${baseURL}/admin/prompts/status/${promptId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status: newStatus }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data.message || "Failed to update prompt status",
+      };
+    }
+
+    return {
+      success: true,
+      message: data.message || `Prompt ${newStatus} successfully!`,
+    };
+  } catch (error) {
+    console.error("Error in updatePromptStatusAction:", error);
+    return { success: false, message: "Internal Server Error" };
+  }
+}
+
+
+
+export async function deletePromptAction(promptId) {
+  const token = await getTokenServer();
+  try {
+    const res = await fetch(`${baseURL}/admin/prompts/${promptId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data.message || "Failed to delete prompt from server",
+      };
+    }
+
+    return {
+      success: true,
+      message: data.message || "Prompt deleted successfully!",
+    };
+  } catch (error) {
+    console.error("Error in deletePromptAction:", error);
+    return { success: false, message: "Internal Server Error" };
+  }
+}
+

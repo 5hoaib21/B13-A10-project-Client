@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { Button, Input, Label, Modal, Table, TextField } from "@heroui/react";
 import { Check, X, Trash2, Eye, ShieldAlert } from "lucide-react";
+import toast from "react-hot-toast"; // 🚀 টোস্ট ইম্পোর্ট করা হলো
+import { updatePromptStatusAction, deletePromptAction } from "@/lib/actions/prompts";
 
 export default function AdminPromptTable({ initialPrompts }) {
   const [prompts, setPrompts] = useState(initialPrompts);
@@ -11,27 +13,68 @@ export default function AdminPromptTable({ initialPrompts }) {
   const [selectedPromptId, setSelectedPromptId] = useState(null);
   const [feedback, setFeedback] = useState("");
 
+  // 🔄 ১. প্রম্পট অ্যাপ্রুভ হ্যান্ডলার
   const handleApprove = async (id) => {
-    console.log("Approved Prompt ID:", id);
-    setPrompts(prev => prev.map(p => p._id === id ? { ...p, status: "approved" } : p));
+    const statusPromise = updatePromptStatusAction(id, "approved").then((res) => {
+      if (res.success) {
+        setPrompts(prev => prev.map(p => (p._id?.$oid === id || p._id === id) ? { ...p, status: "approved" } : p));
+        return res.message || "Prompt approved successfully!";
+      } else {
+        throw new Error(res.message || "Failed to approve prompt");
+      }
+    });
+
+    toast.promise(statusPromise, {
+      loading: "Approving prompt...",
+      success: (msg) => msg,
+      error: (err) => err.message,
+    });
   };
 
+  // 🛑 ২. রিজেক্ট মডাল ট্রিগারকারী
   const triggerRejectModal = (id) => {
     setSelectedPromptId(id);
     setFeedback("");
     setIsOpen(true);
   };
 
+  // 🛑 ৩. রিজেক্ট সাবমিট হ্যান্ডলার (মডাল থেকে)
   const handleRejectSubmit = async () => {
-    console.log(`Rejected ID: ${selectedPromptId} with feedback: ${feedback}`);
-    setPrompts(prev => prev.map(p => p._id === selectedPromptId ? { ...p, status: "rejected", feedback } : p));
-    setIsOpen(false);
+    if (!selectedPromptId) return;
+
+    const statusPromise = updatePromptStatusAction(selectedPromptId, "rejected").then((res) => {
+      if (res.success) {
+        setPrompts(prev => prev.map(p => (p._id?.$oid === selectedPromptId || p._id === selectedPromptId) ? { ...p, status: "rejected", feedback } : p));
+        setIsOpen(false);
+        return res.message || "Prompt rejected successfully!";
+      } else {
+        throw new Error(res.message || "Failed to reject prompt");
+      }
+    });
+
+    toast.promise(statusPromise, {
+      loading: "Rejecting prompt...",
+      success: (msg) => msg,
+      error: (err) => err.message,
+    });
   };
 
+  // 🗑️ ৪. ডিলিট হ্যান্ডলার (উইন্ডো কনফার্মেশন ছাড়া ডিরেক্ট অ্যাকশন)
   const handleDelete = async (id) => {
-    if(confirm("Are you sure you want to delete this prompt permanently?")) {
-        setPrompts(prev => prev.filter(p => p._id !== id));
-    }
+    const deletePromise = deletePromptAction(id).then((res) => {
+      if (res.success) {
+        setPrompts(prev => prev.filter(p => p._id?.$oid !== id && p._id !== id));
+        return res.message || "Prompt deleted permanently.";
+      } else {
+        throw new Error(res.message || "Failed to delete prompt");
+      }
+    });
+
+    toast.promise(deletePromise, {
+      loading: "Deleting prompt...",
+      success: (msg) => msg,
+      error: (err) => err.message,
+    });
   };
 
   const statusStyleMap = {
@@ -46,7 +89,6 @@ export default function AdminPromptTable({ initialPrompts }) {
         <Table.ScrollContainer>
           <Table.Content className="min-w-[800px]">
             <Table.Header>
-              {/* 🚀 এই যে এখানে 'isRowHeader' প্রপ্সটি বসিয়ে দেওয়া হলো, যা এররটা চিরতরে ভ্যানিশ করবে */}
               <Table.Column isRowHeader className="text-zinc-700 font-bold bg-zinc-50 border-b border-zinc-200">#</Table.Column>
               <Table.Column className="text-zinc-700 font-bold bg-zinc-50 border-b border-zinc-200">TEMPLATE TITLE</Table.Column>
               <Table.Column className="text-zinc-700 font-bold bg-zinc-50 border-b border-zinc-200">AI ENGINE</Table.Column>
@@ -55,76 +97,80 @@ export default function AdminPromptTable({ initialPrompts }) {
               <Table.Column className="text-right pr-6 text-zinc-700 font-bold bg-zinc-50 border-b border-zinc-200">ACTIONS</Table.Column>
             </Table.Header>
             <Table.Body>
-              {prompts.map((prompt, index) => (
-                <Table.Row key={prompt._id || index} className="border-b border-zinc-100 hover:bg-zinc-50/80 transition-colors">
-                  
-                  <Table.Cell className="text-zinc-400 font-mono text-xs">{index + 1}</Table.Cell>
-                  
-                  <Table.Cell>
-                    <span className="font-semibold text-zinc-900 text-sm block max-w-[280px] truncate">
-                      {prompt?.title}
-                    </span>
-                  </Table.Cell>
-                  
-                  <Table.Cell>
-                    <span className="px-2.5 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-purple-50 text-purple-600 uppercase border border-purple-100 inline-block">
-                      {prompt?.aiTool || "N/A"}
-                    </span>
-                  </Table.Cell>
-                  
-                  <Table.Cell className="text-zinc-600 text-sm capitalize">{prompt?.visibility}</Table.Cell>
-                  
-                  <Table.Cell className="text-center">
-                    <span className={`inline-block px-2.5 py-0.5 text-[11px] font-bold tracking-wider rounded-full border uppercase ${statusStyleMap[prompt?.status || "pending"]}`}>
-                      {prompt?.status || "pending"}
-                    </span>
-                  </Table.Cell>
-                  
-                  <Table.Cell className="flex items-center justify-end gap-1.5 h-full py-2 pr-6">
-                    <Button isIconOnly size="sm" variant="flat" className="bg-zinc-100 hover:bg-zinc-200 text-zinc-600 rounded-md w-7 h-7">
-                      <Eye size={14} />
-                    </Button>
+              {prompts.map((prompt, index) => {
+                const promptId = prompt._id?.$oid || prompt._id || index;
 
-                    <Button 
-                      isIconOnly 
-                      size="sm" 
-                      variant="flat" 
-                      className="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-100 rounded-md w-7 h-7"
-                      onClick={() => handleApprove(prompt._id)}
-                      isDisabled={prompt?.status === "approved"}
-                    >
-                      <Check size={14} />
-                    </Button>
+                return (
+                  <Table.Row key={promptId} className="border-b border-zinc-100 hover:bg-zinc-50/80 transition-colors">
+                    
+                    <Table.Cell className="text-zinc-400 font-mono text-xs">{index + 1}</Table.Cell>
+                    
+                    <Table.Cell>
+                      <span className="font-semibold text-zinc-900 text-sm block max-w-[280px] truncate">
+                        {prompt?.title}
+                      </span>
+                    </Table.Cell>
+                    
+                    <Table.Cell>
+                      <span className="px-2.5 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-purple-50 text-purple-600 uppercase border border-purple-100 inline-block">
+                        {prompt?.aiTool || "N/A"}
+                      </span>
+                    </Table.Cell>
+                    
+                    <Table.Cell className="text-zinc-600 text-sm capitalize">{prompt?.visibility}</Table.Cell>
+                    
+                    <Table.Cell className="text-center">
+                      <span className={`inline-block px-2.5 py-0.5 text-[11px] font-bold tracking-wider rounded-full border uppercase ${statusStyleMap[prompt?.status || "pending"]}`}>
+                        {prompt?.status || "pending"}
+                      </span>
+                    </Table.Cell>
+                    
+                    <Table.Cell className="flex items-center justify-end gap-1.5 h-full py-2 pr-6">
+                      <Button isIconOnly size="sm" variant="flat" className="bg-zinc-100 hover:bg-zinc-200 text-zinc-600 rounded-md w-7 h-7">
+                        <Eye size={14} />
+                      </Button>
 
-                    <Button 
-                      isIconOnly 
-                      size="sm" 
-                      variant="flat" 
-                      className="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 rounded-md w-7 h-7"
-                      onClick={() => triggerRejectModal(prompt._id)}
-                      isDisabled={prompt?.status === "rejected"}
-                    >
-                      <X size={14} />
-                    </Button>
+                      <Button 
+                        isIconOnly 
+                        size="sm" 
+                        variant="flat" 
+                        className="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-100 rounded-md w-7 h-7"
+                        onClick={() => handleApprove(promptId)}
+                        isDisabled={prompt?.status === "approved"}
+                      >
+                        <Check size={14} />
+                      </Button>
 
-                    <Button 
-                      isIconOnly 
-                      size="sm" 
-                      variant="flat" 
-                      className="bg-zinc-100 hover:bg-red-50 hover:text-red-600 text-zinc-400 border border-transparent rounded-md w-7 h-7 transition-all"
-                      onClick={() => handleDelete(prompt._id)}
-                    >
-                      <Trash2 size={14} />
-                    </Button>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
+                      <Button 
+                        isIconOnly 
+                        size="sm" 
+                        variant="flat" 
+                        className="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 rounded-md w-7 h-7"
+                        onClick={() => triggerRejectModal(promptId)}
+                        isDisabled={prompt?.status === "rejected"}
+                      >
+                        <X size={14} />
+                      </Button>
+
+                      <Button 
+                        isIconOnly 
+                        size="sm" 
+                        variant="flat" 
+                        className="bg-zinc-100 hover:bg-red-50 hover:text-red-600 text-zinc-400 border border-transparent rounded-md w-7 h-7 transition-all"
+                        onClick={() => handleDelete(promptId)}
+                      >
+                        <Trash2 size={14} />
+                      </Button>
+                    </Table.Cell>
+                  </Table.Row>
+                );
+              })}
             </Table.Body>
           </Table.Content>
         </Table.ScrollContainer>
       </Table>
 
-      {/* ⚪ মডাল */}
+      {/* ⚪ রিজেকশন ফিডব্যাক মডাল */}
       <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
         <Modal.Backdrop>
           <Modal.Container placement="auto">
