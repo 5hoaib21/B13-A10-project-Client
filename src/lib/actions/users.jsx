@@ -36,3 +36,32 @@ export async function updateUserRoleAction(userId, newRole) {
 
 
 
+export async function deleteUserAction(userId) {
+  const token = await getTokenServer();
+  try {
+    const res = await fetch(`${baseURL}/admin/users/${userId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data.message || "Failed to delete user from server",
+      };
+    }
+
+    return {
+      success: true,
+      message: data.message || "User deleted successfully!",
+    };
+  } catch (error) {
+    console.error("Error in deleteUserAction:", error);
+    return { success: false, message: "Internal Server Error" };
+  }
+}

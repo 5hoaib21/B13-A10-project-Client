@@ -1,42 +1,59 @@
 "use client";
 
 import React, { useState } from "react";
-import { Table, Chip, Select, ListBox, Button } from "@heroui/react";
+import { Table, Chip, Select, ListBox, Button, AlertDialog } from "@heroui/react";
 import { Trash2 } from "lucide-react";
-import { updateUserRoleAction } from "@/lib/actions/users";
-
-
+import toast from "react-hot-toast"; 
+import { deleteUserAction, updateUserRoleAction } from "@/lib/actions/users";
 
 export default function AdminUserTable({ initialUsers }) {
   const [users, setUsers] = useState(initialUsers);
 
- const handleRoleChange = async (userId, key) => {
-  const newRole = typeof key === "object" ? Array.from(key)[0] : key; 
-  
-  if (!newRole) return;
+  // 🔄 ১. রোল চেঞ্জ হ্যান্ডলার (উইথ রিয়্যাক্ট হট টোস্ট)
+  const handleRoleChange = async (userId, key) => {
+    const newRole = typeof key === "object" ? Array.from(key)[0] : key;
+    if (!newRole) return;
 
-  try {
-    const res = await updateUserRoleAction(userId, newRole);
+    const rolePromise = updateUserRoleAction(userId, newRole).then((res) => {
+      if (res.success) {
+        setUsers((prev) =>
+          prev.map((u) => (u._id?.$oid === userId || u._id === userId ? { ...u, role: newRole } : u))
+        );
+        return res.message || `Role updated to ${newRole}!`;
+      } else {
+        throw new Error(res.message || "Failed to update role");
+      }
+    });
 
-    if (res.success) {
-      setUsers((prev) =>
-        prev.map((u) => (u._id?.$oid === userId || u._id === userId ? { ...u, role: newRole } : u))
-      );
-      alert(res.message);
-    } else {
-      alert(res.message);
-    }
-  } catch (error) {
-    console.error("Failed to update role:", error);
-    alert("Something went wrong!");
-  }
-};
-
-  const handleDeleteUser = (userId) => {
-    if (confirm("Are you sure you want to permanently delete this user?")) {
-      setUsers((prev) => prev.filter((u) => (u._id?.$oid !== userId && u._id !== userId)));
-    }
+    toast.promise(rolePromise, {
+      loading: "Updating user role...",
+      success: (msg) => msg,
+      error: (err) => err.message,
+    });
   };
+
+  // 🗑️ ডিলিট হ্যান্ডলার (উইন্ডো কনফার্মেশন ছাড়া, ডিরেক্ট হট টোস্ট)
+  const handleDeleteUser = async (user) => {
+    const userId = user._id?.$oid || user._id;
+    
+    // কোনো কনফার্মেশন ছাড়াই সরাসরি প্রমিজ ট্রিপ রান হবে
+    const deletePromise = deleteUserAction(userId).then((res) => {
+      if (res.success) {
+        // স্টেট থেকে ইউজার রিমুভ
+        setUsers((prev) => prev.filter((u) => u._id?.$oid !== userId && u._id !== userId));
+        return res.message || "User deleted permanently.";
+      } else {
+        throw new Error(res.message || "Failed to delete user");
+      }
+    });
+
+    // সুন্দর প্রফেশনাল লোডার ও সাকসেস টোস্ট
+    toast.promise(deletePromise, {
+      loading: "Deleting user account...",
+      success: (msg) => msg,
+      error: (err) => err.message,
+    });
+  };;
 
   return (
     <Table aria-label="User Management Table" className="bg-white text-zinc-800 shadow-none">
@@ -44,20 +61,16 @@ export default function AdminUserTable({ initialUsers }) {
         <Table.Content aria-label="Table with resizable columns" className="min-w-[750px]">
           <Table.Header>
             <Table.Column isRowHeader defaultWidth="1.5fr" id="profile" minWidth={220} className="text-zinc-700 font-bold bg-zinc-50 border-b border-zinc-200">
-              PROFILE DETAILS
-              <Table.ColumnResizer />
+              PROFILE DETAILS <Table.ColumnResizer />
             </Table.Column>
             <Table.Column defaultWidth="1.5fr" id="email" minWidth={220} className="text-zinc-700 font-bold bg-zinc-50 border-b border-zinc-200">
-              EMAIL ADDRESS
-              <Table.ColumnResizer />
+              EMAIL ADDRESS <Table.ColumnResizer />
             </Table.Column>
             <Table.Column defaultWidth="0.8fr" id="subscription" minWidth={120} className="text-zinc-700 font-bold bg-zinc-50 border-b border-zinc-200">
-              SUBSCRIPTION
-              <Table.ColumnResizer />
+              SUBSCRIPTION <Table.ColumnResizer />
             </Table.Column>
             <Table.Column defaultWidth="1.2fr" id="role" minWidth={160} className="text-zinc-700 font-bold bg-zinc-50 border-b border-zinc-200">
-              ROLE LEVEL
-              <Table.ColumnResizer />
+              ROLE LEVEL <Table.ColumnResizer />
             </Table.Column>
             <Table.Column defaultWidth="0.6fr" id="actions" minWidth={80} className="text-right pr-6 text-zinc-700 font-bold bg-zinc-50 border-b border-zinc-200">
               ACTIONS
@@ -87,26 +100,15 @@ export default function AdminUserTable({ initialUsers }) {
                   </Table.Cell>
 
                   <Table.Cell>
-                    <Chip 
-                      color={user?.plan === "pro" ? "success" : "default"} 
-                      size="sm" 
-                      variant="soft"
-                      className="font-bold tracking-wider text-[10px] uppercase"
-                    >
+                    <Chip color={user?.plan === "pro" ? "success" : "default"} size="sm" variant="soft" className="font-bold tracking-wider text-[10px] uppercase">
                       {user?.plan === "pro" ? "Premium" : "Free"}
                     </Chip>
                   </Table.Cell>
 
                   <Table.Cell>
-                    <Select 
-                      className="w-full max-w-[130px]" 
-                      placeholder="Select role"
-                      selectedKey={user?.role || "user"}
-                      onSelectionChange={(key) => handleRoleChange(userId, key)}
-                    >
+                    <Select className="w-full max-w-[130px]" placeholder="Select role" selectedKey={user?.role || "user"} onSelectionChange={(key) => handleRoleChange(userId, key)}>
                       <Select.Trigger className="h-8 min-h-8 bg-zinc-50 border border-zinc-200 rounded-lg text-zinc-700 text-xs font-medium">
-                        <Select.Value />
-                        <Select.Indicator />
+                        <Select.Value /> <Select.Indicator />
                       </Select.Trigger>
                       <Select.Popover className="bg-white border border-zinc-200 rounded-xl shadow-lg">
                         <ListBox>
@@ -119,15 +121,47 @@ export default function AdminUserTable({ initialUsers }) {
                   </Table.Cell>
 
                   <Table.Cell className="text-right pr-6">
-                    <Button 
-                      isIconOnly 
-                      size="sm" 
-                      variant="flat" 
-                      className="bg-zinc-50 hover:bg-red-50 hover:text-red-600 text-zinc-400 border border-transparent rounded-md w-7 h-7 transition-all"
-                      onClick={() => handleDeleteUser(userId)}
+                    {/* <Button 
+                      isIconOnly size="sm" variant="flat" 
+                      className="bg-zinc-50 hover:bg-red-50 hover:text-red-600 text-zinc-400 rounded-md w-7 h-7 transition-all"
+                      onClick={() => handleDeleteUser(user)} // 🚀 সরাসরি উইন্ডো কনফার্ম কল হবে
                     >
                       <Trash2 size={14} />
-                    </Button>
+                    </Button> */}
+
+                      <AlertDialog>
+      <Button variant="danger-soft"><Trash2 size={14} /></Button>
+      <AlertDialog.Backdrop>
+        <AlertDialog.Container>
+          <AlertDialog.Dialog className="sm:max-w-[400px]">
+            <AlertDialog.CloseTrigger />
+            <AlertDialog.Header>
+              <AlertDialog.Icon status="danger" />
+              <AlertDialog.Heading>Delete user permanently?</AlertDialog.Heading>
+            </AlertDialog.Header>
+            <AlertDialog.Body>
+              <p>
+                This will permanently delete <strong>{user?.name}</strong> and all of its
+                data. This action cannot be undone.
+              </p>
+            </AlertDialog.Body>
+            <AlertDialog.Footer>
+              <Button slot="close" variant="tertiary">
+                Cancel
+              </Button>
+              <Button 
+              slot="close" 
+              variant="danger"
+              onClick={() => handleDeleteUser(user)}
+              >
+                Delete User
+              </Button>
+            </AlertDialog.Footer>
+          </AlertDialog.Dialog>
+        </AlertDialog.Container>
+      </AlertDialog.Backdrop>
+    </AlertDialog>
+
                   </Table.Cell>
                 </Table.Row>
               );
