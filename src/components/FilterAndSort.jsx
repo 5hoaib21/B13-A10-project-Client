@@ -1,7 +1,6 @@
-// components/FilterAndSort.jsx
+// components/FilterAndSort.jsx - সিম্পলেস্ট ভার্সন
 'use client';
 
-import { Select, ListBox, Button } from '@heroui/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 const FilterAndSort = () => {
@@ -10,15 +9,12 @@ const FilterAndSort = () => {
 
   const updateFilters = (key, value) => {
     const params = new URLSearchParams(searchParams.toString());
-
-    if (value && value !== 'all') {
+    if (value && value !== 'all' && value !== '') {
       params.set(key, value);
     } else {
       params.delete(key);
     }
-
-    const query = params.toString();
-    router.push(query ? `/prompts?${query}` : '/prompts');
+    router.push(params.toString() ? `/prompts?${params.toString()}` : '/prompts');
   };
 
   const currentCategory = searchParams.get('category') || '';
@@ -26,100 +22,92 @@ const FilterAndSort = () => {
   const currentDifficulty = searchParams.get('difficulty') || '';
   const currentSort = searchParams.get('sort') || 'latest';
 
+  const activeFilters = [];
+  if (currentCategory) activeFilters.push({ key: 'category', label: currentCategory });
+  if (currentAiTool) activeFilters.push({ key: 'aiTool', label: currentAiTool });
+  if (currentDifficulty) activeFilters.push({ key: 'difficulty', label: currentDifficulty });
+  if (currentSort !== 'latest') activeFilters.push({ key: 'sort', label: currentSort });
+
+  const clearAll = () => router.push('/prompts');
+
   return (
-    <div className="flex flex-wrap gap-3 my-4">
-      <Select
-        placeholder="Category"
-        selectedKeys={currentCategory ? [currentCategory] : []}
-        onSelectionChange={(keys) => updateFilters('category', [...keys][0])}
-        className="w-40"
-      >
-        <Select.Trigger>
-          <Select.Value />
-          <Select.Indicator />
-        </Select.Trigger>
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2">
+        <select
+          value={currentCategory}
+          onChange={(e) => updateFilters('category', e.target.value)}
+          className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">All Categories</option>
+          <option value="development">Development</option>
+          <option value="design">Design</option>
+          <option value="marketing">Marketing</option>
+          <option value="writing">Writing</option>
+          <option value="education">Education</option>
+          <option value="business">Business</option>
+        </select>
 
-        <Select.Popover>
-          <ListBox>
-            <ListBox.Item id="all">All</ListBox.Item>
-            <ListBox.Item id="development">Development</ListBox.Item>
-            <ListBox.Item id="design">Design</ListBox.Item>
-            <ListBox.Item id="marketing">Marketing</ListBox.Item>
-            <ListBox.Item id="writing">Writing</ListBox.Item>
-            <ListBox.Item id="education">Education</ListBox.Item>
-            <ListBox.Item id="business">Business</ListBox.Item>
-          </ListBox>
-        </Select.Popover>
-      </Select>
+        <select
+          value={currentAiTool}
+          onChange={(e) => updateFilters('aiTool', e.target.value)}
+          className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">All AI Tools</option>
+          <option value="chatgpt">ChatGPT</option>
+          <option value="gemini">Gemini</option>
+          <option value="claude">Claude</option>
+          <option value="midjourney">Midjourney</option>
+          <option value="stable-diffusion">Stable Diffusion</option>
+        </select>
 
-      <Select
-        placeholder="AI Tool"
-        selectedKeys={currentAiTool ? [currentAiTool] : []}
-        onSelectionChange={(keys) => updateFilters('aiTool', [...keys][0])}
-        className="w-40"
-      >
-        <Select.Trigger>
-          <Select.Value />
-          <Select.Indicator />
-        </Select.Trigger>
+        <select
+          value={currentDifficulty}
+          onChange={(e) => updateFilters('difficulty', e.target.value)}
+          className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">All Levels</option>
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
 
-        <Select.Popover>
-          <ListBox>
-            <ListBox.Item id="all">All</ListBox.Item>
-            <ListBox.Item id="chatgpt">ChatGPT</ListBox.Item>
-            <ListBox.Item id="gemini">Gemini</ListBox.Item>
-            <ListBox.Item id="claude">Claude</ListBox.Item>
-            <ListBox.Item id="midjourney">Midjourney</ListBox.Item>
-            <ListBox.Item id="stable-diffusion">Stable Diffusion</ListBox.Item>
-          </ListBox>
-        </Select.Popover>
-      </Select>
+        <select
+          value={currentSort}
+          onChange={(e) => updateFilters('sort', e.target.value)}
+          className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="latest">Latest</option>
+          <option value="popular">Most Popular</option>
+          <option value="copied">Most Copied</option>
+        </select>
 
-      <Select
-        placeholder="Difficulty"
-        selectedKeys={currentDifficulty ? [currentDifficulty] : []}
-        onSelectionChange={(keys) => updateFilters('difficulty', [...keys][0])}
-        className="w-40"
-      >
-        <Select.Trigger>
-          <Select.Value />
-          <Select.Indicator />
-        </Select.Trigger>
+        {activeFilters.length > 0 && (
+          <button
+            onClick={clearAll}
+            className="px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+          >
+            Clear All
+          </button>
+        )}
+      </div>
 
-        <Select.Popover>
-          <ListBox>
-            <ListBox.Item id="all">All</ListBox.Item>
-            <ListBox.Item id="Beginner">Beginner</ListBox.Item>
-            <ListBox.Item id="Intermediate">Intermediate</ListBox.Item>
-            <ListBox.Item id="Pro">Pro</ListBox.Item>
-          </ListBox>
-        </Select.Popover>
-      </Select>
-
-      <Select
-        placeholder="Sort by"
-        selectedKeys={[currentSort]}
-        onSelectionChange={(keys) => updateFilters('sort', [...keys][0])}
-        className="w-40"
-      >
-        <Select.Trigger>
-          <Select.Value />
-          <Select.Indicator />
-        </Select.Trigger>
-
-        <Select.Popover>
-          <ListBox>
-            <ListBox.Item id="latest">Latest</ListBox.Item>
-            <ListBox.Item id="popular">Most Popular</ListBox.Item>
-            <ListBox.Item id="copied">Most Copied</ListBox.Item>
-          </ListBox>
-        </Select.Popover>
-      </Select>
-
-      {(currentCategory || currentAiTool || currentDifficulty || currentSort !== 'latest') && (
-        <Button size="sm" variant="ghost" onPress={() => router.push('/prompts')}>
-          Clear All
-        </Button>
+      {activeFilters.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {activeFilters.map((filter) => (
+            <span
+              key={filter.key}
+              className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 text-xs rounded-full"
+            >
+              {filter.label}
+              <button
+                onClick={() => updateFilters(filter.key, '')}
+                className="hover:text-red-500 ml-0.5"
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
       )}
     </div>
   );
