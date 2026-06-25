@@ -39,16 +39,16 @@ export const getAllPrompts = async ({search = "",status = "approved", category =
   if (sort) params.append("sort", sort);
 
   const url = `${baseURL}/prompts?${params.toString()}`;
-  console.log("📤 Fetching URL:", url);
+  // console.log("📤 Fetching URL:", url);
 
   const res = await fetch(url);
-  console.log("📡 Status:", res.status);
+  // console.log("📡 Status:", res.status);
   if (!res.ok) {
     throw new Error("Failed to fetch all prompts");
   }
 
   const data = await res.json();
-  console.log("📦 Data:", data?.length || 0);
+  // console.log("📦 Data:", data?.length || 0);
   return data;
 };
 
