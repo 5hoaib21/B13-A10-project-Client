@@ -3,55 +3,27 @@
 import React, { useState, useEffect } from "react";
 import { Search, Sparkles, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation"; // ✅ useRouter যোগ করলাম
 import { motion, AnimatePresence } from "framer-motion";
 
 const ALL_TAGS = [
-  "Midjourney v6", "ChatGPT-4o", "SaaS Copywriting", "SEO Optimization",
-  "React Code Gen", "UI/UX Copy", "Social Media Hooks", "Email Sequences"
+  "ChatGPT", "Gemini", "Claude", "Midjourney",
+  "Stable Diffusion"
 ];
 
-// অ্যানিমেশন কনফিগারেশন অবজেক্ট
+// অ্যানিমেশন কনফিগারেশন
 const animations = {
-  // ধীর অ্যানিমেশন
-  slow: {
-    duration: 0.8,
-    ease: "easeOut"
-  },
-  // মিডিয়াম অ্যানিমেশন
-  medium: {
-    duration: 0.5,
-    ease: "easeInOut"
-  },
-  // ফাস্ট অ্যানিমেশন
-  fast: {
-    duration: 0.3,
-    ease: "easeOut"
-  },
-  // স্প্রিং ইফেক্ট
-  spring: {
-    type: "spring",
-    stiffness: 300,
-    damping: 20
-  },
-  // স্প্রিং ইফেক্ট (সফট)
-  springSoft: {
-    type: "spring",
-    stiffness: 200,
-    damping: 25
-  },
-  // স্প্রিং ইফেক্ট (হার্ড)
-  springHard: {
-    type: "spring",
-    stiffness: 500,
-    damping: 15
-  },
-  // ডিলে সহ
-  delay: (ms) => ({
-    delay: ms / 1000
-  })
+  slow: { duration: 0.8, ease: "easeOut" },
+  medium: { duration: 0.5, ease: "easeInOut" },
+  fast: { duration: 0.3, ease: "easeOut" },
+  spring: { type: "spring", stiffness: 300, damping: 20 },
+  springSoft: { type: "spring", stiffness: 200, damping: 25 },
+  springHard: { type: "spring", stiffness: 500, damping: 15 },
+  delay: (ms) => ({ delay: ms / 1000 })
 };
 
 export default function Banner() {
+  const router = useRouter(); // ✅ router যোগ করলাম
   const [searchQuery, setSearchQuery] = useState("");
   const [trendingTags, setTrendingTags] = useState([]);
 
@@ -60,10 +32,21 @@ export default function Banner() {
     setTrendingTags(shuffled.slice(0, 4));
   }, []);
 
+  // ✅ সার্চ হ্যান্ডলার - রিডাইরেক্ট করবে /prompts?search=query
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-    console.log("Searching for:", searchQuery);
+    
+    // URL এ encode করে রিডাইরেক্ট
+    const encodedQuery = encodeURIComponent(searchQuery.trim());
+    router.push(`/prompts?search=${encodedQuery}`);
+  };
+
+  // ✅ ট্যাগ ক্লিক করলেও সার্চ করবে
+  const handleTagClick = (tag) => {
+    setSearchQuery(tag);
+    const encodedQuery = encodeURIComponent(tag);
+    router.push(`/prompts?search=${encodedQuery}`);
   };
 
   return (
@@ -73,7 +56,7 @@ export default function Banner() {
       variants={containerVariants}
       className="relative overflow-hidden bg-white border-b border-gray-100 py-20 sm:py-24"
     >
-      {/* ব্যাকগ্রাউন্ড ব্লাব - কন্টিনিউয়াস অ্যানিমেশন */}
+      {/* ব্যাকগ্রাউন্ড ব্লাব */}
       <motion.div
         animate={{
           scale: [1, 1.2, 1],
@@ -87,7 +70,7 @@ export default function Banner() {
         className="absolute top-0 left-1/2 -z-10 h-[400px] w-[800px] -translate-x-1/2 bg-[radial-gradient(ellipse_at_top,rgba(120,119,198,0.1),transparent_50%)]"
       />
 
-      {/* ফ্লোটিং পার্টিকেল ১ */}
+      {/* ফ্লোটিং পার্টিকেল */}
       <motion.div
         animate={{
           y: [0, -20, 0],
@@ -103,7 +86,6 @@ export default function Banner() {
         ✨
       </motion.div>
 
-      {/* ফ্লোটিং পার্টিকেল ২ */}
       <motion.div
         animate={{
           y: [0, 15, 0],
@@ -161,7 +143,7 @@ export default function Banner() {
           Skip the guesswork. Access premium, production-ready blueprints optimized for ChatGPT, Midjourney, and LLMs.
         </motion.p>
 
-        {/* সার্চ বার */}
+        {/* 🔍 সার্চ বার - এখন কাজ করবে */}
         <motion.div 
           variants={itemVariants}
           className="mt-10 max-w-2xl mx-auto"
@@ -170,7 +152,7 @@ export default function Banner() {
             onSubmit={handleSearchSubmit} 
             className="relative flex items-center p-2 rounded-2xl bg-white border border-gray-200 shadow-md focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-100 transition-all duration-300"
             whileHover={{ scale: 1.01 }}
-            transition={animations.springSoft}  // ← স্প্রিং ইফেক্ট এখানে
+            transition={animations.springSoft}
           >
             <div className="flex items-center pl-3 pointer-events-none text-gray-400">
               <Search size={20} />
@@ -186,7 +168,7 @@ export default function Banner() {
               type="submit"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              transition={animations.spring}  // ← স্প্রিং ইফেক্ট এখানে
+              transition={animations.spring}
               className="bg-zinc-950 hover:bg-zinc-800 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-all shadow-sm cursor-pointer"
             >
               Search
@@ -194,7 +176,7 @@ export default function Banner() {
           </motion.form>
         </motion.div>
 
-        {/* ট্রেন্ডিং ট্যাগস */}
+        {/* ট্রেন্ডিং ট্যাগস - ক্লিক করলেও সার্চ হবে */}
         <motion.div 
           variants={itemVariants}
           className="mt-5 flex flex-wrap items-center justify-center gap-2 max-w-2xl mx-auto"
@@ -208,7 +190,7 @@ export default function Banner() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.8, y: 10 }}
                 transition={{ 
-                  ...animations.medium,  // ← মিডিয়াম অ্যানিমেশন
+                  ...animations.medium,
                   delay: index * 0.05
                 }}
                 whileHover={{ 
@@ -217,7 +199,7 @@ export default function Banner() {
                   y: -2
                 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => setSearchQuery(tag)}
+                onClick={() => handleTagClick(tag)} // ✅ ট্যাগ ক্লিক করলেও সার্চ
                 className="text-xs bg-gray-50 hover:bg-gray-100 text-gray-600 px-3 py-1.5 rounded-lg border border-gray-200 transition-all cursor-pointer"
               >
                 #{tag}
@@ -234,7 +216,7 @@ export default function Banner() {
           <motion.div
             whileHover={{ scale: 1.03, y: -2 }}
             whileTap={{ scale: 0.97 }}
-            transition={animations.springSoft}  // ← স্প্রিং ইফেক্ট এখানে
+            transition={animations.springSoft}
           >
             <Link
               href="/prompts"
@@ -244,7 +226,7 @@ export default function Banner() {
               <motion.span
                 animate={{ x: [0, 5, 0] }}
                 transition={{ 
-                  ...animations.slow,  // ← ধীর অ্যানিমেশন
+                  ...animations.slow,
                   repeat: Infinity 
                 }}
               >
@@ -256,7 +238,7 @@ export default function Banner() {
           <motion.div
             whileHover={{ scale: 1.03, y: -2 }}
             whileTap={{ scale: 0.97 }}
-            transition={animations.springSoft}  // ← স্প্রিং ইফেক্ট এখানে
+            transition={animations.springSoft}
           >
             <Link
               href="/pricing"
@@ -280,7 +262,7 @@ const containerVariants = {
     transition: {
       staggerChildren: 0.15,
       delayChildren: 0.1,
-      ...animations.medium  // ← মিডিয়াম অ্যানিমেশন এখানে
+      ...animations.medium
     }
   }
 };
@@ -290,6 +272,6 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: animations.medium  // ← মিডিয়াম অ্যানিমেশন এখানে
+    transition: animations.medium
   }
 };
