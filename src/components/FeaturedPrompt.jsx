@@ -18,12 +18,10 @@ import { getFeaturedPrompts } from '@/lib/api/prompts';
 
 const FeaturedPrompt = async () => {
     const data = await getFeaturedPrompts();
-    console.log('Featured prompts data:', data);
     
     // ✅ চেক করা data টি array কিনা
     const prompts = Array.isArray(data) ? data : data?.prompts || [];
     
-    console.log('Prompts array:', prompts);
 
     if (!prompts || prompts.length === 0) {
         return (

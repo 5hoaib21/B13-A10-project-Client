@@ -7,7 +7,6 @@ import { auth } from '@/lib/auth';
 
 export async function POST(req) {
   const request = await req.json()
-  console.log('req:', request);
   try {
     const headersList = await headers()
     const origin = headersList.get('origin')

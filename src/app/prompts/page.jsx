@@ -12,7 +12,6 @@ const PublicPromptsPage = async ({ searchParams }) => {
   const aiTool = await params?.aiTool || '';
   const difficulty = await params?.difficulty || '';
   const sort = await params?.sort || 'latest';
-  console.log("🔍 Values:", { search, category, aiTool, difficulty, sort }); 
   
   // API কল করুন
   const prompts = await getAllPrompts({ 
@@ -23,7 +22,6 @@ const PublicPromptsPage = async ({ searchParams }) => {
     difficulty,
     sort
   });
-  console.log("📦 Final prompts:", prompts?.length || 0);
   
   return (
     <div className="min-h-screen bg-gray-50 py-8 mt-20">

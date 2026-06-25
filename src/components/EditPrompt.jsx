@@ -96,7 +96,6 @@ export function EditPrompt({ promptData, promptId }) {
       }
 
     } catch (error) {
-      console.error("❌ Error saving prompt:", error);
       toast.error(error.message || "Failed to save prompt");
     } finally {
       setIsLoading(false);

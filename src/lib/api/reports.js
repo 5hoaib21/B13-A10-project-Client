@@ -8,7 +8,6 @@ export async function getReportsAction() {
   const token = await getTokenServer();
   try {
     const url = `${baseURL}/admin/reports`;
-    console.log("🚀 Fetching from URL:", url); 
 
     const res = await fetch(url, {
       method: "GET",

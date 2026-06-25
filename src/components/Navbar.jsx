@@ -23,7 +23,6 @@ const Navbar = () => {
 
   const { data: session } = authClient.useSession();
   const user = session?.user;
-  // console.log(user);
 
   useEffect(() => {
     const handleScroll = () => {

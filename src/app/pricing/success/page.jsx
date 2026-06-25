@@ -27,7 +27,6 @@ export default async function Success({ searchParams }) {
   } = await stripe.checkout.sessions.retrieve(session_id, {
     expand: ['line_items', 'payment_intent']
   })
-  console.log('metadata:', metadata);
 
   if (status === 'open') {
     return redirect('/')

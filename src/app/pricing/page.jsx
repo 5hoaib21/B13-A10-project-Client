@@ -10,8 +10,7 @@ export default function UserPricingPage() {
   const router = useRouter()
   const { data: session } = authClient.useSession();
   const user = session?.user;
-  const userRole = user?.role; // Expected: "User" or "Creator"
-  console.log("user", userRole);
+  const userRole = user?.role; 
 
   const handlePayment = async (price) => {
   const res = await   fetch(`/api/subscription`, {
@@ -21,7 +20,6 @@ export default function UserPricingPage() {
   })
   const data = await res.json()
   router.push(data.url)
-  console.log('data: ',data);
   }
  // Configured data structure for explicit AI Prompt Marketplace One-Time flat payment layout
   const oneTimePlans = [

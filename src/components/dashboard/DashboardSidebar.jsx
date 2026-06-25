@@ -29,7 +29,6 @@ export async function DashboardSidebar() {
     redirect('/signin')
   }
   const role = user?.role || 'creator';
-  // console.log('user', user);
   const dashboardItems = {
     user: [
       {

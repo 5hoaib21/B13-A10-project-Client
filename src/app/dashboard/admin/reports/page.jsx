@@ -3,7 +3,6 @@ import React from 'react';
 import AdminReportTable from './AdminReportTable';
 const ReportedPromptPage = async () => {
     const initialReports = await getReportsAction();
-    console.log('initialReports:',initialReports);
 
 
     return (

@@ -39,7 +39,6 @@ export default function SignUpPage() {
       const data = await authClient.signIn.social({
         provider: 'google',
       }) 
-      // console.log('data',data);
     }
 
   return (

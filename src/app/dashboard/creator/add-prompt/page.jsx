@@ -23,8 +23,6 @@ const AddPromptPage = async () => {
     const isLimitExceeded = limitStatus?.isLimitExceeded || false;
     const totalPrompts = limitStatus?.totalPrompts || 0;
 
-    console.log('Is Limit Exceeded?:', isLimitExceeded);
-    console.log('Total Prompts Count:', totalPrompts);
 
     return (
         <div className="min-h-screen bg-white text-zinc-900 py-8 px-4 sm:px-6 lg:px-8">

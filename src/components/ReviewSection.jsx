@@ -5,7 +5,6 @@ import Marquee from 'react-fast-marquee';
 const ReviewSection = async () => {
   const promptsWithReviews = await getPromptsWithReviews();
   
-  console.log('Prompts with reviews:', promptsWithReviews);
 
   const allReviews = [];
   promptsWithReviews.forEach(prompt => {

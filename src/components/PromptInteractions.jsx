@@ -85,10 +85,8 @@ export default function PromptInteractions({
 
       const response = await incrementCopyCount(promptId);
       if (response.success) {
-        console.log("📈 Copy count incremented in database");
         router.refresh();
       } else {
-        console.error("⚠️ Failed to update copy count in DB:", response.error);
       }
     } catch (err) {
       toast.error("Failed to copy prompt.");
@@ -114,7 +112,6 @@ export default function PromptInteractions({
         toast.error(response.error || "Failed to update bookmark. Make sure you are logged in.");
       }
     } catch (error) {
-      console.error("❌ Bookmark error:", error);
       toast.error("Something went wrong!");
     }
   };
@@ -147,7 +144,6 @@ export default function PromptInteractions({
         toast.error(response.error || "Failed to submit review. Make sure you are logged in.");
       }
     } catch (error) {
-      console.error("❌ Error submitting review:", error);
       toast.error("Something went wrong!");
     } finally {
       setIsLoading(false);

@@ -309,7 +309,6 @@ export async function getFeaturedPrompts() {
         }
         
         const data = await res.json();
-        console.log('API Response:', data);
         
         // ✅ ডেটা চেক করা - array নাকি object
         if (Array.isArray(data)) {
@@ -320,7 +319,6 @@ export async function getFeaturedPrompts() {
             return data.data;
         } else {
             // যদি ডেটা array না হয়, তাহলে খালি array return
-            console.warn('Unexpected data format:', data);
             return [];
         }
         

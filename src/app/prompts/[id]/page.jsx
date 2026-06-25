@@ -18,7 +18,6 @@ import { getUserSession } from "@/lib/core/session";
 
 export default async function PromptDetailsPage({ params }) {
   const user = await getUserSession();
-  console.log("user: ", user);
   const { id } = await params;
   const prompt = await getPromptById(id);
 
