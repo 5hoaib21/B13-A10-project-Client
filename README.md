@@ -5,7 +5,7 @@ An advanced, modern, community-driven ecosystem engineered for AI enthusiasts to
 ---
 
 ## 🌐 Live Deployment
-🔗 **Live Application URL:** [https://your-live-project-link.vercel.app](https://your-live-project-link.vercel.app)  
+🔗 **Live Application URL:** [https://your-live-project-link.vercel.appppp](https://your-live-project-link.vercel.)  
 *(Note: Please replace this link with your actual deployed Vercel/Netlify hosting URL)*
 
 ---
