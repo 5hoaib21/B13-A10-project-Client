@@ -273,6 +273,8 @@ export const promptManagementByAdmin = async () => {
     return { success: false, error: error.message };
   }
 };
+
+
 export const usersManagementByAdmin = async () => {
   try {
     const token = await getTokenServer()
@@ -294,3 +296,36 @@ export const usersManagementByAdmin = async () => {
   }
 };
 
+
+
+export async function getFeaturedPrompts() {
+    try {
+        const res = await fetch(`${baseURL}/prompts/featured`, {
+            cache: 'no-store'
+        });
+        
+        if (!res.ok) {
+            throw new Error(`Server status: ${res.status}`);
+        }
+        
+        const data = await res.json();
+        console.log('API Response:', data);
+        
+        // ✅ ডেটা চেক করা - array নাকি object
+        if (Array.isArray(data)) {
+            return data;
+        } else if (data?.prompts && Array.isArray(data.prompts)) {
+            return data.prompts;
+        } else if (data?.data && Array.isArray(data.data)) {
+            return data.data;
+        } else {
+            // যদি ডেটা array না হয়, তাহলে খালি array return
+            console.warn('Unexpected data format:', data);
+            return [];
+        }
+        
+    } catch (error) {
+        console.error("❌ Error fetching featured prompts:", error);
+        return [];
+    }
+}

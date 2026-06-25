@@ -1,4 +1,6 @@
 import Banner from "@/components/Banner";
+import FeaturedPrompt from "@/components/FeaturedPrompt";
+import FeatureSection from "@/components/FeatureSection";
 import ReviewSection from "@/components/ReviewSection";
 import WhyChooseUs from "@/components/WhyChooseUs";
 import { getAllPrompts } from "@/lib/api/prompts";
@@ -11,8 +13,10 @@ const Home = async () => {
   return (
     <div>
       <Banner />
+      <FeaturedPrompt />
       <WhyChooseUs />
       {firstPromptId && <ReviewSection promptId={firstPromptId} />}
+      <FeatureSection /> 
     </div>
   );
 };
