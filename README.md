@@ -6,7 +6,6 @@ An advanced, modern, community-driven ecosystem engineered for AI enthusiasts to
 
 ## 🌐 Live Deployment
 🔗 **Live Application URL:** [Clink here](https://b13-a10-project-client.vercel.app)  
-*(Note: Please replace this link with your actual deployed Vercel/Netlify hosting URL)*
 
 ---
 
