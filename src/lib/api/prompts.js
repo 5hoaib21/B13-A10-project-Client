@@ -1,3 +1,4 @@
+import "server-only";
 import { getTokenServer } from "../getTokenServer";
 
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;

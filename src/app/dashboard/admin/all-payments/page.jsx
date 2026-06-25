@@ -1,9 +1,9 @@
+export const dynamic = "force-dynamic";
 import { paymentCollections } from '@/lib/api/payment';
 import React from 'react';
 import { CreditCard } from 'lucide-react';
 import AdminPaymentTable from './AdminPaymentTable';
 
-export const dynamic = "force-dynamic";
 
 const AllPayments = async () => {
     // এক্সপ্রেস থেকে সব পেমেন্ট ট্রানজেকশন নিয়ে আসা হচ্ছে

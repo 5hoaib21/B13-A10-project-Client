@@ -1,9 +1,10 @@
+export const dynamic = "force-dynamic";
+
 import React from 'react';
 import { Sparkles } from 'lucide-react';
 import { promptManagementByAdmin } from '@/lib/api/prompts';
 import AdminPromptTable from './AdminPromptTable';
 
-export const dynamic = "force-dynamic";
 
 const AllPromptPage = async () => {
     // এক্সপ্রেস থেকে সব প্রম্পট নিয়ে আসা হচ্ছে

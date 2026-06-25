@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getReportsAction } from '@/lib/api/reports';
 import React from 'react';
 import AdminReportTable from './AdminReportTable';

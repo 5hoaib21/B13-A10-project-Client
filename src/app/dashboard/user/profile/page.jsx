@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import React from 'react';
 import Link from 'next/link';
 import { User, Mail, Shield, Zap, Terminal, AlertCircle, ArrowRight } from 'lucide-react';

@@ -18,7 +18,8 @@ import { CiSaveDown1 } from "react-icons/ci";
 import { MdReport } from "react-icons/md";
 import { TbAsset } from "react-icons/tb";
 import { IoAnalytics } from "react-icons/io5";
-import { redirect } from "next/navigation";
+import { redirect } from "next/navigation";// ✅ ActiveLink কম্পোনেন্ট ইম্পোর্ট
+import ActiveLink from "../ActiveLink";
 
 export async function DashboardSidebar() {
   const session = await auth.api.getSession({
@@ -29,6 +30,7 @@ export async function DashboardSidebar() {
     redirect('/signin')
   }
   const role = user?.role || 'creator';
+  
   const dashboardItems = {
     user: [
       {
@@ -77,19 +79,10 @@ export async function DashboardSidebar() {
         link: "/dashboard/admin/all-payments",
       },
       { icon: MdReport, label: "Reports", link: "/dashboard/admin/reports" },
-      // { icon: IoAnalytics, label: "Analytics", link: "/dashboard/admin/analytics" },
     ],
   };
 
   const navItems = dashboardItems[role];
-  // [
-  //   { icon: House, label: "Home" },
-  //   { icon: Magnifier, label: "Search" },
-  //   { icon: Bell, label: "Notifications" },
-  //   { icon: Envelope, label: "Messages" },
-  //   { icon: Person, label: "Profile" },
-  //   { icon: Gear, label: "Settings" },
-  // ];
 
   return (
     <Drawer>
@@ -97,20 +90,23 @@ export async function DashboardSidebar() {
         <Bars />
         Menu
       </Button>
+      
       <nav className="flex flex-col gap-1 hidden lg:block md:block">
         {navItems.map((item) => (
-         <Link href={item.link} key={item.label}>
-           <button
+          <ActiveLink 
+            href={item.link} 
             key={item.label}
+            prefetch={false}
             className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-default"
-            type="button"
+            activeClassName="bg-blue-50 text-blue-600 shadow-sm"
+            inactiveClassName="text-gray-600 hover:bg-gray-50 hover:text-gray-900"
           >
             <item.icon className="size-5 text-muted" />
             {item.label}
-          </button>
-         </Link>
+          </ActiveLink>
         ))}
       </nav>
+      
       <Drawer.Backdrop>
         <Drawer.Content placement="left">
           <Drawer.Dialog>
@@ -121,16 +117,17 @@ export async function DashboardSidebar() {
             <Drawer.Body>
               <nav className="flex flex-col gap-1">
                 {navItems.map((item) => (
-                  <Link href={item.link} key={item.label}>
-                  <button
+                  <ActiveLink 
+                    href={item.link} 
                     key={item.label}
-                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-default"
-                    type="button"
+                    prefetch={false}
+                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-default w-full"
+                    activeClassName="bg-blue-50 text-blue-600 shadow-sm"
+                    inactiveClassName="text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                   >
                     <item.icon className="size-5 text-muted" />
                     {item.label}
-                  </button>
-                  </Link>
+                  </ActiveLink>
                 ))}
               </nav>
             </Drawer.Body>

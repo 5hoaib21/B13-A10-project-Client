@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import Banner from "@/components/Banner";
 import FeaturedPrompt from "@/components/FeaturedPrompt";
 import FeatureSection from "@/components/FeatureSection";

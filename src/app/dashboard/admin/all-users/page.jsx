@@ -1,9 +1,10 @@
+export const dynamic = "force-dynamic";
+
 import { usersManagementByAdmin } from '@/lib/api/prompts';
 import React from 'react';
 import { Users } from 'lucide-react';
 import AdminUserTable from './AdminUserTable';
 
-export const dynamic = "force-dynamic";
 
 const AllUsersPage = async () => {
     // এক্সপ্রেস ব্যাকএন্ড থেকে সব ইউজার ডেটা নিয়ে আসা হচ্ছে

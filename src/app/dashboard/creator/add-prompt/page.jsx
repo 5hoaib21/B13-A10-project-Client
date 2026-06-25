@@ -1,3 +1,4 @@
+
 import AddPromptForm from '@/components/dashboard/AddPromptForm';
 import React from 'react';
 import { Sparkles, ArrowLeft, Zap, ArrowRight, ShieldAlert } from 'lucide-react';

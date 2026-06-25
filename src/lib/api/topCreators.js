@@ -4,9 +4,7 @@ const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export async function getTopCreators() {
   try {
-    const res = await fetch(`${baseURL}/api/top-creators`, {
-      cache: "no-store",
-    });
+    const res = await fetch(`${baseURL}/api/top-creators`);
 
     if (!res.ok) {
       throw new Error(`Server status: ${res.status}`);
