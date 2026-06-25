@@ -10,7 +10,7 @@ An advanced, modern, community-driven ecosystem engineered for AI enthusiasts to
 ---
 
 ## 🎯 Project Purpose
-The **AI Prompt Sharing & Marketplace Platform** bridges the gap between creative prompt engineers and AI users. It serves as a secure, role-based hub where users can exchange optimized blueprints for different AI tools. The platform aims to maximize productivity by offering robust searching, advanced filtering, community validation through reviews, and granular dashboard analytics for content creators and administrators alike.
+The **PromptForge, AI Prompt Sharing & Marketplace Platform** bridges the gap between creative prompt engineers and AI users. It serves as a secure, role-based hub where users can exchange optimized blueprints for different AI tools. The platform aims to maximize productivity by offering robust searching, advanced filtering, community validation through reviews, and granular dashboard analytics for content creators and administrators alike.
 
 ---
 
