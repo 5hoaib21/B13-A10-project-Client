@@ -1,25 +1,49 @@
 "use server";
 
+import { getAllPrompts } from "./prompts";
+
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
+export async function getPromptsWithReviews() {
+  try {
+    const prompts = await getAllPrompts();
+    
+    // ফিল্টার: যেসব প্রম্পটে reviews array আছে এবং খালি না
+    const promptsWithReviews = prompts.filter(prompt => 
+      prompt.reviews && 
+      prompt.reviews.length > 0
+    );
+    
+    return promptsWithReviews;
+    
+  } catch (error) {
+    console.error("❌ Error fetching prompts with reviews:", error);
+    return [];
+  }
+}
+
+// নির্দিষ্ট প্রম্পটের রিভিউ fetch করা
 export async function getPromptReviews(promptId) {
   try {
-    // 🎯 [HARDCODED TEST]: এনভায়রনমেন্ট ভেরিয়েবল বাদে ডিরেক্ট আইপি দিয়ে টেস্ট
-    const fullUrl = `${baseURL}/prompts/${promptId}/reviews`;
-    
-    console.log("🚀 Server is trying to hit:", fullUrl);
-
-    const res = await fetch(fullUrl, {
-      cache: "no-store",
+    const res = await fetch(`${baseURL}/prompts/${promptId}/reviews`, {
+      cache: 'no-store'
     });
     
     if (!res.ok) {
       throw new Error(`Server status: ${res.status}`);
     }
     
-    return await res.json();
+    const data = await res.json();
+    return data;
+    
   } catch (error) {
-    console.error("❌ Action Error details:", error.message);
-    return { success: false, error: error.message, reviews: [] };
+    console.error("❌ Error fetching reviews:", error);
+    return {
+      success: false,
+      error: error.message,
+      reviews: [],
+      totalReviews: 0,
+      rating: 0
+    };
   }
 }
