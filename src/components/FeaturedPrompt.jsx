@@ -115,7 +115,7 @@ const FeaturedCard = ({ prompt, index }) => {
         day: 'numeric'
     }) : 'N/A';
 
-    const tagList = tags?.split(',').map(tag => tag.trim()) || [];
+    const tagList = Array.isArray(tags) ? tags : (typeof tags === 'string' ? tags.split(',').map(tag => tag.trim()): []) 
 
     const difficultyColors = {
         beginner: { label: 'Beginner', color: 'bg-emerald-100 text-emerald-700' },
