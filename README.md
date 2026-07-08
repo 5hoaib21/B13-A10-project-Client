@@ -14,27 +14,26 @@ The **PromptForge, AI Prompt Sharing & Marketplace Platform** bridges the gap be
 
 ---
 
-## ✨ Key Features
+## ✨ Core & Unique Features
 
-### 👤 User & Authentication Management
-- **Secure Authentication:** Seamless session management powered by `Better-Auth` with MongoDB persistence layer.
-- **Role-Based Access Control (RBAC):** Distinct interfaces and guard rails tailored for **Users**, **Creators**, and **Administrators**.
+### 🧠 Advanced AI & Prompt Engineering Capabilities
+* **Multi-Model Support:** Engineered specific categorization and input structures for diverse AI engines, including **ChatGPT, Gemini, Claude, and Midjourney**.
+* **Prompt Playground (Interactive Preview):** Dynamic variable insertion that allows users to test or preview prompts with custom placeholders before copying/buying.
+* **One-Click Token Copy & Counter:** Integrated a smart copy system alongside a built-in token/word counter to ensure compliance with AI context limits.
 
-### ⚡ Core Prompt Operations
-- **Dynamic Exploration Hub:** Real-time lookup with lightning-fast search matching titles, tool tags, and keywords.
-- **Advanced multi-axis filtering:** Refine assets effortlessly by Category, AI Tool, and Difficulty tiers.
-- **Optimized Content Sorting:** Instantly arrange community blueprints by Latest additions, Popularity, or Copy counts.
-- **Submission Guard Rails:** Free tier account limits capped at 3 prompt submissions before enforcing premium subscription plans.
+### 🔍 Next-Gen Discovery & Marketplace Dynamics
+* **Granular Elastic Search & Multi-Filters:** Advanced searching mechanism with real-time filtering based on AI Models, Categories, Use-cases, and Pricing (Free vs. Premium).
+* **Community Validation & Trust Score:** A robust rating and review system with a custom algorithm that calculates creator "Trust Scores" based on community feedback and prompt success rates.
+* **Trending & Leaderboard System:** Dynamically updates and showcases top-performing prompt engineers and the most upvoted prompts of the week.
 
-### 📊 Interactive Engagement & Dashboards
-- **One-Click Bookmark:** Save and catalog favorite prompts instantly into a customized collection layout.
-- **Community Review System:** Rate and share detailed textual feedback on prompts with interactive star metrics.
-- **Analytics Visualization:** Beautiful tracking metrics using responsive chart widgets (`Recharts`).
-- **Responsive Navigation Structure:** Features a desktop-optimized sidebar transitioning into an fluid mobile drawer interaction interface.
+### 📊 Advanced Role-Based Dashboards (RBAC)
+* **Creator Analytics Engine:** A dedicated dashboard for Prompt Creators featuring granular visual analytics, tracking total prompt downloads, views, and revenue generation.
+* **Admin Control Center:** A secure, high-level command center equipped with prompt moderation tools, user management, reports handling, and system-wide log monitoring.
+* **Custom Collections (Bookmarks):** Allows general users to curate, organize, and save their favorite prompts into private or public folders for quick access.
 
-### 🛡️ Administrative Controls
-- **Prompt Moderation Workflow:** Administrative approval pipeline changing state transitions (`pending` to `approved`) seamlessly.
-- **User & Payment Management:** Comprehensive panels for monitoring ecosystem transactions and user tiers.
+### ⚡ Technical Excellence & Performance
+* **Optimized State Management:** Smooth data flow and UI state synchronization across multi-step prompt creation wizard.
+* **Responsive Fluid Design:** A fully adaptive UI built with Tailwind CSS, ensuring pixel-perfect responsiveness from desktop monitors to mobile screens.
 
 ---
 
