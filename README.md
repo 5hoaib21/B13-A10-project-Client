@@ -72,9 +72,16 @@ The **PromptForge, AI Prompt Sharing & Marketplace Platform** bridges the gap be
 
 ---
 
-## 🛠️ Local Installation & Setup
+## ⚙️ Installation & Setup
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
-   cd your-repo-name
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/5hoaib21/B13-A10-project-Client.git
+```
+
+### 2. Installation
+
+```bash
+npm i
+```
